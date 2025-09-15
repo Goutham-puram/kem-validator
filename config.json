@@ -3,13 +3,13 @@
   "output_dir": "kem-results",
   "processed_dir": "processed-archive",
   "invalid_dir": "invalid-archive",
-  "ocr_provider": "tesseract",
+  "ocr_provider": "azure",
   "openai_api_key": "",
-  "azure_endpoint": "",
-  "azure_key": "",
+  "azure_endpoint": "https://ocourtdoc.cognitiveservices.azure.com/",
+  "azure_key": "3DtOhNwlIMRpxmNJi5tCrfWGijcdvhTumOHwsNhdUs8Ug9Q0FTxfJQQJ99BIACYeBjFXJ3w3AAALACOGQ0j0",
   "db_path": "kem_validator.db",
   "auto_watch": true,
-  "process_interval": 5,
+  "process_interval": 3,
   "validation_rules": {
     "min_digits": 9,
     "max_digits": 13,
@@ -18,7 +18,15 @@
   },
   "file_settings": {
     "max_file_size_mb": 10,
-    "allowed_extensions": [".txt", ".pdf", ".png", ".jpg", ".jpeg", ".tiff", ".bmp"],
+    "allowed_extensions": [
+      ".txt",
+      ".pdf",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".tiff",
+      ".bmp"
+    ],
     "encoding": "utf-8",
     "encoding_errors": "replace"
   },

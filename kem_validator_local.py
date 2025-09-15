@@ -11,6 +11,7 @@ import re
 import logging
 import sqlite3
 import hashlib
+import base64
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Any
@@ -30,6 +31,22 @@ from PIL import Image
 import pytesseract
 import requests
 from openai import OpenAI
+
+# Optional imports - wrapped in try-except
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    print("OpenAI not installed. Run: pip install openai")
+
+try:
+    from azure.ai.formrecognizer import DocumentAnalysisClient
+    from azure.core.credentials import AzureKeyCredential
+    AZURE_AVAILABLE = True
+except ImportError:
+    AZURE_AVAILABLE = False
+    print("Azure Document Intelligence not installed. Run: pip install azure-ai-formrecognizer")
 
 # Configure logging
 logging.basicConfig(
