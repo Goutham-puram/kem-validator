@@ -1,0 +1,34 @@
+SEA COURT VALIDATION TEST - MIXED CASES
+Generated: 2025-09-18 14:41:07
+Seattle Court Equipment Registry
+===================================
+
+VALID SEA IDs (8-12 digits):
+SEA	12345678	Marine Equipment A - Valid (8 digits - minimum)
+SEA	123456789	Harbor Tool B - Valid (9 digits)
+SEA	1234567890	Port Device C - Valid (10 digits)
+SEA	12345678901	Ferry Part D - Valid (11 digits)
+SEA	123456789012	Ship Component E - Valid (12 digits - maximum)
+SEA	87654321	Standard Item F - Valid (8 digits)
+SEA	555666777	Regular Equipment G - Valid (9 digits)
+
+INVALID SEA IDs (outside 8-12 range):
+SEA	1234567	Too Short Item H - Invalid (7 digits - below minimum)
+SEA	123456	Very Short Item I - Invalid (6 digits)
+SEA	1234567890123	Too Long Item J - Invalid (13 digits - above maximum)
+SEA	12345678901234	Extra Long Item K - Invalid (14 digits)
+SEA	SEATTLEPORT	No Digits Item L - Invalid (no numeric digits)
+SEA	SEA123DOCK	Mixed Alpha Item M - Invalid (only 3 digits)
+SEA		Empty ID Item N - Invalid (empty ID)
+
+EDGE CASES:
+SEA	00000000	All Zeros - Valid (8 digits)
+SEA	999999999999	All Nines - Valid (12 digits)
+SEA	123-456-78	With Dashes - Valid (8 digits extracted)
+SEA	(206)555-1234	Phone Format - Valid (10 digits extracted)
+
+===================================
+Expected Results:
+- Valid entries: 11
+- Invalid entries: 7
+- Total SEA lines: 18

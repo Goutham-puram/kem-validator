@@ -1,0 +1,42 @@
+MULTI-COURT REALISTIC DATA MIX
+Generated: 2025-09-18 14:41:07
+Simulating real-world multi-court processing
+===================================
+
+Daily Equipment Log - Multiple Jurisdictions
+Date: 2025-09-18
+
+Morning Shift - Kirkland Operations:
+KEM	4152500182618	Hydraulic System Primary
+KEM	987654321	Control Panel Alpha
+Equipment maintenance scheduled for next week.
+KEM	1234567890123	Backup Generator Unit
+
+Afternoon Shift - Seattle Harbor:
+SEA	206555123	Marine Pump Station
+SEA	87654321	Harbor Light Controller
+Port operations running smoothly today.
+SEA	555666777888	Navigation Equipment
+
+Evening Shift - Tacoma Industrial:
+TAC	2535551234567	Factory Conveyor System
+TAC	1122334455	Industrial Press Unit
+Manufacturing targets met for today.
+TAC	9876543210123	Quality Control Station
+
+Cross-Reference Items:
+KEM	REFERENCE: SEA-87654321	Cross-reference note
+SEA	REFERENCE: TAC-1122334455	Cross-reference note
+TAC	REFERENCE: KEM-987654321	Cross-reference note
+
+Mixed Format Lines:
+KEM 123456789 Space-separated KEM item
+SEA	12345678	Tab-separated SEA item
+TAC   1234567890   Multiple-space TAC item
+
+===================================
+Expected Processing Results:
+- Multiple courts in single file
+- Various formatting styles
+- Cross-references and notes
+- Realistic data patterns

@@ -1,0 +1,30 @@
+KEM COURT - ALL VALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing all valid ranges for KEM (9-13 digits):
+
+Minimum Length (9 digits):
+KEM	123456789	Equipment Alpha
+KEM	987654321	Equipment Beta
+KEM	555444333	Equipment Gamma
+
+Mid Range (10-12 digits):
+KEM	1234567890	Ten Digit Item
+KEM	12345678901	Eleven Digit Item
+KEM	123456789012	Twelve Digit Item
+
+Maximum Length (13 digits):
+KEM	1234567890123	Maximum Length Item A
+KEM	9876543210987	Maximum Length Item B
+KEM	1111111111111	Maximum Length Item C
+
+Special Valid Cases:
+KEM	000000000	All Zeros (9 digits)
+KEM	0000000000000	All Zeros Max (13 digits)
+KEM	123.456.789.012	Dots Removed (12 digits)
+KEM	A1B2C3D4E5F6G7H8I9	Alphanumeric (9 digits extracted)
+
+===================================
+All 16 entries should PASS validation
+Expected success rate: 100%

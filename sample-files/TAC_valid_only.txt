@@ -1,0 +1,30 @@
+TAC COURT - ALL VALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing all valid ranges for TAC (10-14 digits):
+
+Minimum Length (10 digits):
+TAC	1234567890	Tacoma Item Alpha
+TAC	9876543210	Tacoma Item Beta
+TAC	1122334455	Tacoma Item Gamma
+
+Mid Range (11-13 digits):
+TAC	12345678901	Eleven Digit Tacoma Item
+TAC	123456789012	Twelve Digit Tacoma Item
+TAC	1234567890123	Thirteen Digit Tacoma Item
+
+Maximum Length (14 digits):
+TAC	12345678901234	Maximum Tacoma Item A
+TAC	98765432109876	Maximum Tacoma Item B
+TAC	11112222333344	Maximum Tacoma Item C
+
+Special Valid Cases:
+TAC	0000000000	All Zeros Min (10 digits)
+TAC	00000000000000	All Zeros Max (14 digits)
+TAC	253.555.1234.56	Extended Phone (11 digits)
+TAC	T1A2C3O4M5A6789012	Alphanumeric (10 digits extracted)
+
+===================================
+All 15 entries should PASS validation
+Expected success rate: 100%

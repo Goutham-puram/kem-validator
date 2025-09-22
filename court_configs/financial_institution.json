@@ -1,0 +1,78 @@
+{
+  "description": "Financial institution configuration with strict validation",
+  "use_case": "Banks, credit unions, financial services requiring exact digit validation",
+  "setup_instructions": [
+    "Copy this configuration to courts_config.json",
+    "Financial court requires exactly 12 digits (no more, no less)",
+    "Extended retention period for compliance (84 months = 7 years)",
+    "Conservative processing settings for accuracy"
+  ],
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court",
+    "description": "Standard court processing",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6
+    }
+  },
+
+  "FIN": {
+    "enabled": true,
+    "name": "Financial Services Court",
+    "description": "Financial document validation with exact 12-digit requirement",
+    "validation_rules": {
+      "min_digits": 12,
+      "max_digits": 12,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "fin-inbox",
+      "output_dir": "fin-output",
+      "invalid_dir": "fin-invalid",
+      "processed_dir": "fin-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 84
+    },
+    "processing": {
+      "batch_size": 50,
+      "timeout_seconds": 600,
+      "retry_attempts": 5
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/financial/incoming",
+      "output_path": "/ftp/financial/processed",
+      "error_path": "/ftp/financial/errors"
+    }
+  },
+
+  "global_settings": {
+    "default_court": "KEM",
+    "archive_base_dir": "archive",
+    "database_path": "kem_validator.db",
+    "backup_enabled": true,
+    "logging_level": "DEBUG",
+    "max_file_size_mb": 25,
+    "allowed_extensions": [".txt", ".pdf"],
+    "concurrent_courts": 1,
+    "performance_monitoring": {
+      "enabled": true,
+      "report_interval_hours": 6
+    }
+  }
+}

@@ -1,0 +1,35 @@
+KEM COURT VALIDATION TEST - MIXED CASES
+Generated: 2025-09-18 14:41:07
+Kirkland Court Equipment Inventory
+===================================
+
+VALID KEM IDs (9-13 digits):
+KEM	123456789	Hydraulic Pump Model A - Valid (9 digits - minimum)
+KEM	1234567890	Control Module B - Valid (10 digits)
+KEM	12345678901	Sensor Unit C - Valid (11 digits)
+KEM	123456789012	Valve Assembly D - Valid (12 digits)
+KEM	1234567890123	Maximum Equipment E - Valid (13 digits - maximum)
+KEM	987654321	Standard Item F - Valid (9 digits)
+KEM	4152500182618	Legacy Item G - Valid (13 digits)
+
+INVALID KEM IDs (outside 9-13 range):
+KEM	12345678	Too Short Item H - Invalid (8 digits - below minimum)
+KEM	1234567	Very Short Item I - Invalid (7 digits)
+KEM	12345678901234	Too Long Item J - Invalid (14 digits - above maximum)
+KEM	123456789012345	Extra Long Item K - Invalid (15 digits)
+KEM	ABCDEFGH	No Digits Item L - Invalid (no numeric digits)
+KEM	ABC123DEF456	Mixed Alpha Item M - Invalid (only 6 digits)
+KEM		Empty ID Item N - Invalid (empty ID)
+
+EDGE CASES:
+KEM	000000000	All Zeros - Valid (9 digits)
+KEM	9999999999999	All Nines - Valid (13 digits)
+KEM	123-456-789	With Dashes - Valid (9 digits extracted)
+KEM	(123)456-7890	Phone Format - Valid (10 digits extracted)
+
+===================================
+Expected Results:
+- Valid entries: 11
+- Invalid entries: 7
+- Total KEM lines: 18
+- Non-KEM informational lines: Multiple

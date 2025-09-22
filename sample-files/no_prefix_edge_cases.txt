@@ -1,0 +1,41 @@
+NO PREFIX TEST - EDGE CASES
+Generated: 2025-09-18 14:41:07
+Testing edge cases without court prefixes
+===================================
+
+Boundary length testing (no court specified):
+1	Single digit
+12	Two digits
+123	Three digits
+1234	Four digits
+12345	Five digits
+123456	Six digits
+1234567	Seven digits
+12345678	Eight digits - SEA valid, KEM/TAC invalid
+123456789	Nine digits - KEM valid, SEA/TAC varies
+1234567890	Ten digits - All courts potentially valid
+12345678901	Eleven digits - KEM/SEA valid, TAC valid
+123456789012	Twelve digits - KEM/SEA valid, TAC valid
+1234567890123	Thirteen digits - KEM valid, SEA invalid, TAC valid
+12345678901234	Fourteen digits - TAC valid, KEM/SEA invalid
+123456789012345	Fifteen digits - All courts invalid
+
+Special formatting (no prefixes):
+123-456-789	Dashed format
+(123)456-7890	Phone format
+123.456.7890	Dotted format
+123 456 7890	Spaced format
+
+All same digits (no prefixes):
+000000000	All zeros (9 digits)
+111111111	All ones (9 digits)
+999999999	All nines (9 digits)
+0000000000000	All zeros (13 digits)
+9999999999999	All nines (13 digits)
+
+===================================
+Expected Results:
+- Should demonstrate default court assignment behavior
+- Various lengths test different court compatibility
+- Formatting should not affect digit extraction
+- System should handle edge cases gracefully

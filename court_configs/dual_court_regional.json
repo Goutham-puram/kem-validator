@@ -1,0 +1,73 @@
+{
+  "description": "Regional dual-court configuration (KEM + SEA)",
+  "use_case": "Organizations handling both Kirkland and Seattle court documents",
+  "setup_instructions": [
+    "Copy this configuration to courts_config.json",
+    "Create sea-inbox, sea-output, sea-invalid, sea-processed directories",
+    "Files with SEA prefix will use 8-12 digit validation",
+    "Files with KEM prefix will use 9-13 digit validation"
+  ],
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court",
+    "description": "Primary court system",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/kem/incoming",
+      "output_path": "/ftp/courts/kem/processed"
+    }
+  },
+
+  "SEA": {
+    "enabled": true,
+    "name": "Seattle Court",
+    "description": "Seattle regional court system",
+    "validation_rules": {
+      "min_digits": 8,
+      "max_digits": 12,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "sea-inbox",
+      "output_dir": "sea-output",
+      "invalid_dir": "sea-invalid",
+      "processed_dir": "sea-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 12
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/sea/incoming",
+      "output_path": "/ftp/courts/sea/processed"
+    }
+  },
+
+  "global_settings": {
+    "default_court": "KEM",
+    "archive_base_dir": "archive",
+    "database_path": "kem_validator.db",
+    "backup_enabled": true,
+    "logging_level": "INFO",
+    "max_file_size_mb": 50,
+    "allowed_extensions": [".txt", ".pdf", ".png", ".jpg"],
+    "concurrent_courts": 2
+  }
+}

@@ -1,0 +1,305 @@
+{
+  "//": "=== MULTI-COURT CONFIGURATION TEMPLATE ===",
+  "//description": "This template shows all available configuration options for multiple court systems",
+  "//usage": "Copy this file to courts_config.json and modify as needed",
+  "//note": "Remove all comment lines (starting with //) before using",
+
+  "//": "=== REQUIRED COURTS ===",
+  "//kem_note": "KEM court is always required as the primary court system",
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court",
+    "description": "Primary court system - always available for backward compatibility",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true,
+      "//": "Standard KEM validation: 9-13 digits with KEM prefix"
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6,
+      "//": "Archive files for 6 months"
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/kem/incoming",
+      "output_path": "/ftp/courts/kem/processed",
+      "error_path": "/ftp/courts/kem/errors",
+      "archive_path": "/ftp/courts/kem/archive"
+    }
+  },
+
+  "//": "=== ADDITIONAL COURTS (OPTIONAL) ===",
+  "//sea_note": "Seattle court with different validation range",
+
+  "SEA": {
+    "enabled": false,
+    "name": "Seattle Court",
+    "description": "Seattle regional court system with 8-12 digit validation",
+    "validation_rules": {
+      "min_digits": 8,
+      "max_digits": 12,
+      "prefix_required": true,
+      "//": "SEA validation: 8-12 digits (shorter range than KEM)"
+    },
+    "directories": {
+      "input_dir": "sea-inbox",
+      "output_dir": "sea-output",
+      "invalid_dir": "sea-invalid",
+      "processed_dir": "sea-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 12,
+      "//": "Keep SEA files longer (12 months)"
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/sea/incoming",
+      "output_path": "/ftp/courts/sea/processed",
+      "error_path": "/ftp/courts/sea/errors",
+      "archive_path": "/ftp/courts/sea/archive"
+    }
+  },
+
+  "//tac_note": "Tacoma court with longer validation range",
+
+  "TAC": {
+    "enabled": false,
+    "name": "Tacoma Court",
+    "description": "Tacoma regional court system with 10-14 digit validation",
+    "validation_rules": {
+      "min_digits": 10,
+      "max_digits": 14,
+      "prefix_required": true,
+      "//": "TAC validation: 10-14 digits (longer range than KEM)"
+    },
+    "directories": {
+      "input_dir": "tac-inbox",
+      "output_dir": "tac-output",
+      "invalid_dir": "tac-invalid",
+      "processed_dir": "tac-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 3,
+      "//": "Shorter retention for TAC (3 months)"
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/tac/incoming",
+      "output_path": "/ftp/courts/tac/processed",
+      "error_path": "/ftp/courts/tac/errors",
+      "archive_path": "/ftp/courts/tac/archive"
+    }
+  },
+
+  "//": "=== EXAMPLE COURTS WITH DIFFERENT VALIDATION RULES ===",
+  "//financial_note": "Example: Financial court with strict 12-digit requirement",
+
+  "FIN": {
+    "enabled": false,
+    "name": "Financial Services Court",
+    "description": "Financial document processing with exact 12-digit requirement",
+    "validation_rules": {
+      "min_digits": 12,
+      "max_digits": 12,
+      "prefix_required": true,
+      "//": "Exact validation: Must be exactly 12 digits"
+    },
+    "directories": {
+      "input_dir": "fin-inbox",
+      "output_dir": "fin-output",
+      "invalid_dir": "fin-invalid",
+      "processed_dir": "fin-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 84,
+      "//": "Financial records kept 7 years (84 months)"
+    },
+    "processing": {
+      "batch_size": 50,
+      "timeout_seconds": 600,
+      "retry_attempts": 5,
+      "//": "Conservative processing for financial data"
+    }
+  },
+
+  "//legacy_note": "Example: Legacy court with flexible validation",
+
+  "LEG": {
+    "enabled": false,
+    "name": "Legacy Document Court",
+    "description": "Processing historical documents with flexible validation",
+    "validation_rules": {
+      "min_digits": 1,
+      "max_digits": 50,
+      "prefix_required": false,
+      "//": "Very flexible: 1-50 digits, prefix optional"
+    },
+    "directories": {
+      "input_dir": "legacy-inbox",
+      "output_dir": "legacy-output",
+      "invalid_dir": "legacy-invalid",
+      "processed_dir": "legacy-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 120,
+      "//": "Long retention for historical documents (10 years)"
+    },
+    "processing": {
+      "batch_size": 25,
+      "timeout_seconds": 900,
+      "retry_attempts": 3,
+      "//": "Slower processing for legacy format handling"
+    }
+  },
+
+  "//hvl_note": "Example: High-volume court optimized for speed",
+
+  "HVL": {
+    "enabled": false,
+    "name": "High Volume Processing Court",
+    "description": "Optimized for processing large batches quickly",
+    "validation_rules": {
+      "min_digits": 8,
+      "max_digits": 16,
+      "prefix_required": true,
+      "//": "Wide range for various document types"
+    },
+    "directories": {
+      "input_dir": "hvl-inbox",
+      "output_dir": "hvl-output",
+      "invalid_dir": "hvl-invalid",
+      "processed_dir": "hvl-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 1,
+      "//": "Short retention for high-volume processing"
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/courts/hvl/incoming",
+      "output_path": "/ftp/courts/hvl/processed",
+      "error_path": "/ftp/courts/hvl/errors",
+      "settings": {
+        "polling_interval": 10,
+        "batch_size": 50,
+        "//": "Fast FTP polling for high volume"
+      }
+    },
+    "processing": {
+      "batch_size": 500,
+      "timeout_seconds": 60,
+      "retry_attempts": 1,
+      "parallel_processing": true,
+      "//": "Optimized for speed and throughput"
+    }
+  },
+
+  "//": "=== CUSTOM COURT TEMPLATE ===",
+  "//custom_note": "Template for adding your own custom court",
+
+  "CUSTOM": {
+    "enabled": false,
+    "name": "Custom Court Name",
+    "description": "Description of your custom court system",
+    "validation_rules": {
+      "min_digits": 6,
+      "max_digits": 20,
+      "prefix_required": true,
+      "//": "Customize these values for your court"
+    },
+    "directories": {
+      "input_dir": "custom-inbox",
+      "output_dir": "custom-output",
+      "invalid_dir": "custom-invalid",
+      "processed_dir": "custom-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/custom/incoming",
+      "output_path": "/ftp/courts/custom/processed",
+      "error_path": "/ftp/courts/custom/errors"
+    },
+    "processing": {
+      "batch_size": 100,
+      "timeout_seconds": 300,
+      "retry_attempts": 3
+    }
+  },
+
+  "//": "=== GLOBAL SYSTEM SETTINGS ===",
+  "//global_note": "Settings that apply to the entire multi-court system",
+
+  "global_settings": {
+    "default_court": "KEM",
+    "//default_note": "Court to use for files without court prefix",
+
+    "archive_base_dir": "archive",
+    "//archive_note": "Base directory for all court archives",
+
+    "database_path": "kem_validator.db",
+    "//db_note": "SQLite database for storing validation results",
+
+    "backup_enabled": true,
+    "//backup_note": "Enable automatic backups before migrations",
+
+    "logging_level": "INFO",
+    "//logging_note": "Options: DEBUG, INFO, WARNING, ERROR",
+
+    "max_file_size_mb": 50,
+    "//size_note": "Maximum file size for processing",
+
+    "allowed_extensions": [".txt", ".pdf", ".png", ".jpg", ".tiff", ".bmp"],
+    "//ext_note": "File types allowed for processing",
+
+    "concurrent_courts": 3,
+    "//concurrent_note": "Maximum courts to process simultaneously",
+
+    "performance_monitoring": {
+      "enabled": true,
+      "report_interval_hours": 24,
+      "//perf_note": "Generate performance reports every 24 hours"
+    }
+  },
+
+  "//": "=== CONFIGURATION NOTES ===",
+  "//setup_notes": [
+    "1. Copy this file to courts_config.json",
+    "2. Remove all comment lines starting with //",
+    "3. Enable only the courts you need",
+    "4. Create required directories for enabled courts",
+    "5. Test configuration with: python -c 'import json; json.load(open(\"courts_config.json\"))'",
+    "6. Restart application to load new configuration"
+  ],
+
+  "//validation_examples": {
+    "KEM": "KEM 123456789 (9 digits) or KEM 1234567890123 (13 digits)",
+    "SEA": "SEA 12345678 (8 digits) or SEA 123456789012 (12 digits)",
+    "TAC": "TAC 1234567890 (10 digits) or TAC 12345678901234 (14 digits)",
+    "FIN": "FIN 123456789012 (exactly 12 digits)",
+    "LEG": "LEG 1 (1 digit) or 12345...50digits (up to 50 digits)",
+    "HVL": "HVL 12345678 (8 digits) or HVL 1234567890123456 (16 digits)"
+  },
+
+  "//directory_structure": {
+    "example": "court-inbox/, court-output/, court-invalid/, court-processed/",
+    "archive": "archive/COURT/YYYY/MM/ (automatic organization by court and date)"
+  }
+}

@@ -1,0 +1,34 @@
+TAC COURT VALIDATION TEST - MIXED CASES
+Generated: 2025-09-18 14:41:07
+Tacoma Court Industrial Registry
+===================================
+
+VALID TAC IDs (10-14 digits):
+TAC	1234567890	Industrial Unit A - Valid (10 digits - minimum)
+TAC	12345678901	Factory Tool B - Valid (11 digits)
+TAC	123456789012	Plant Device C - Valid (12 digits)
+TAC	1234567890123	Facility Part D - Valid (13 digits)
+TAC	12345678901234	Complex Component E - Valid (14 digits - maximum)
+TAC	9876543210	Standard Item F - Valid (10 digits)
+TAC	5554443332221	Regular Equipment G - Valid (13 digits)
+
+INVALID TAC IDs (outside 10-14 range):
+TAC	123456789	Too Short Item H - Invalid (9 digits - below minimum)
+TAC	12345678	Very Short Item I - Invalid (8 digits)
+TAC	123456789012345	Too Long Item J - Invalid (15 digits - above maximum)
+TAC	1234567890123456	Extra Long Item K - Invalid (16 digits)
+TAC	TACOMAPLANT	No Digits Item L - Invalid (no numeric digits)
+TAC	TAC123MILL	Mixed Alpha Item M - Invalid (only 3 digits)
+TAC		Empty ID Item N - Invalid (empty ID)
+
+EDGE CASES:
+TAC	0000000000	All Zeros - Valid (10 digits)
+TAC	99999999999999	All Nines - Valid (14 digits)
+TAC	253-555-1234	With Dashes - Valid (10 digits extracted)
+TAC	(253)555-12345	Phone Plus - Valid (11 digits extracted)
+
+===================================
+Expected Results:
+- Valid entries: 11
+- Invalid entries: 7
+- Total TAC lines: 18

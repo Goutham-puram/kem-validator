@@ -1,0 +1,34 @@
+KEM COURT - ALL INVALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing invalid cases for KEM (must be 9-13 digits):
+
+Too Short (< 9 digits):
+KEM	1	Single Digit
+KEM	12	Two Digits
+KEM	123	Three Digits
+KEM	1234567	Seven Digits
+KEM	12345678	Eight Digits
+
+Too Long (> 13 digits):
+KEM	12345678901234	Fourteen Digits
+KEM	123456789012345	Fifteen Digits
+KEM	1234567890123456	Sixteen Digits
+KEM	12345678901234567890	Twenty Digits
+
+No Valid Digits:
+KEM	ABCDEFGHIJK	Pure Letters
+KEM	!!!@@@###	Special Characters
+KEM		Empty ID
+KEM	---...---	Punctuation Only
+KEM	αβγδεζηθι	Unicode Characters
+
+Mixed Invalid:
+KEM	ABC123	Only 3 digits in alphanumeric
+KEM	12AB34CD56	Only 6 digits scattered
+KEM	Phone: 123-456-7890	Text with 10 digits (but formatted)
+
+===================================
+All 18 entries should FAIL validation
+Expected success rate: 0%

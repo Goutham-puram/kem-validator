@@ -1,0 +1,88 @@
+{
+  "description": "High-volume processing configuration optimized for speed",
+  "use_case": "Organizations processing thousands of documents daily",
+  "setup_instructions": [
+    "Copy this configuration to courts_config.json",
+    "Optimized for speed with larger batch sizes",
+    "Shorter retention periods to manage storage",
+    "FTP integration enabled for automated processing"
+  ],
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court",
+    "description": "Standard court processing",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 3
+    },
+    "processing": {
+      "batch_size": 200,
+      "timeout_seconds": 60,
+      "retry_attempts": 2
+    }
+  },
+
+  "HVL": {
+    "enabled": true,
+    "name": "High Volume Processing Court",
+    "description": "Optimized for processing large batches quickly",
+    "validation_rules": {
+      "min_digits": 8,
+      "max_digits": 16,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "hvl-inbox",
+      "output_dir": "hvl-output",
+      "invalid_dir": "hvl-invalid",
+      "processed_dir": "hvl-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 1
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/courts/hvl/incoming",
+      "output_path": "/ftp/courts/hvl/processed",
+      "error_path": "/ftp/courts/hvl/errors",
+      "settings": {
+        "polling_interval": 10,
+        "batch_size": 50
+      }
+    },
+    "processing": {
+      "batch_size": 500,
+      "timeout_seconds": 30,
+      "retry_attempts": 1,
+      "parallel_processing": true
+    }
+  },
+
+  "global_settings": {
+    "default_court": "KEM",
+    "archive_base_dir": "archive",
+    "database_path": "kem_validator.db",
+    "backup_enabled": true,
+    "logging_level": "WARNING",
+    "max_file_size_mb": 100,
+    "allowed_extensions": [".txt"],
+    "concurrent_courts": 5,
+    "performance_monitoring": {
+      "enabled": true,
+      "report_interval_hours": 1
+    }
+  }
+}

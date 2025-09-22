@@ -1,0 +1,30 @@
+TAC COURT - ALL INVALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing invalid cases for TAC (must be 10-14 digits):
+
+Too Short (< 10 digits):
+TAC	1	Single Digit
+TAC	123456789	Nine Digits
+
+Too Long (> 14 digits):
+TAC	123456789012345	Fifteen Digits
+TAC	1234567890123456	Sixteen Digits
+TAC	12345678901234567890	Twenty Digits
+
+No Valid Digits:
+TAC	TACOMA	Pure Letters
+TAC	INDUSTRIAL	Industry Name
+TAC	@#$%^&*()	Special Characters
+TAC		Empty ID
+TAC	ΩΦΨΧΥΤΣΡ	Greek Letters
+
+Mixed Invalid:
+TAC	TAC123	Only 3 digits
+TAC	PLANT456MILL	Only 3 digits scattered
+TAC	Factory#789ABC	Only 3 digits with text
+
+===================================
+All 15 entries should FAIL validation
+Expected success rate: 0%

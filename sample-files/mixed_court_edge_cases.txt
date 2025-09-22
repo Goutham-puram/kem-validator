@@ -1,0 +1,46 @@
+MULTI-COURT EDGE CASES BATCH
+Generated: 2025-09-18 14:41:07
+Testing edge cases across all courts
+===================================
+
+MINIMUM LENGTH TESTS:
+KEM	123456789	KEM minimum (9 digits) - Valid
+SEA	12345678	SEA minimum (8 digits) - Valid
+TAC	1234567890	TAC minimum (10 digits) - Valid
+
+MAXIMUM LENGTH TESTS:
+KEM	1234567890123	KEM maximum (13 digits) - Valid
+SEA	123456789012	SEA maximum (12 digits) - Valid
+TAC	12345678901234	TAC maximum (14 digits) - Valid
+
+BOUNDARY VIOLATIONS:
+KEM	12345678	One below KEM minimum - Invalid
+SEA	1234567	One below SEA minimum - Invalid
+TAC	123456789	One below TAC minimum - Invalid
+KEM	12345678901234	One above KEM maximum - Invalid
+SEA	1234567890123	One above SEA maximum - Invalid
+TAC	123456789012345	One above TAC maximum - Invalid
+
+ALL ZEROS TESTS:
+KEM	000000000	KEM all zeros (9) - Valid
+SEA	00000000	SEA all zeros (8) - Valid
+TAC	0000000000	TAC all zeros (10) - Valid
+
+ALL NINES TESTS:
+KEM	9999999999999	KEM all nines (13) - Valid
+SEA	999999999999	SEA all nines (12) - Valid
+TAC	99999999999999	TAC all nines (14) - Valid
+
+SPECIAL CHARACTER EXTRACTION:
+KEM	123-456-789	KEM with dashes - Valid (9 digits)
+SEA	(206)555-12	SEA phone format - Valid (8 digits)
+TAC	253.555.1234	TAC dot format - Valid (10 digits)
+
+ALPHANUMERIC MIXED:
+KEM	A1B2C3D4E5F6G7H8I9	KEM alphanumeric - Valid (9 digits)
+SEA	S1E2A3T4T5L6E78	SEA alphanumeric - Valid (8 digits)
+TAC	T1A2C3O4M5A6789012	TAC alphanumeric - Valid (10 digits)
+
+===================================
+Comprehensive edge case testing across all courts
+Tests minimum, maximum, boundaries, and special formats

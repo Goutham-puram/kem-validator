@@ -1,0 +1,32 @@
+NO PREFIX TEST - PURE NUMERIC DATA
+Generated: 2025-09-18 14:41:07
+Testing default court assignment for data without prefixes
+===================================
+
+Equipment Registry - No Court Prefixes
+Should default to KEM court validation (9-13 digits)
+
+Equipment List:
+123456789	Equipment Alpha - Should be valid for default KEM
+1234567890123	Equipment Beta - Should be valid for default KEM
+12345678	Equipment Gamma - Should be invalid for default KEM (too short)
+12345678901234	Equipment Delta - Should be invalid for default KEM (too long)
+
+87654321	Equipment Echo - Should be invalid for default KEM (8 digits)
+987654321	Equipment Foxtrot - Should be valid for default KEM (9 digits)
+1111111111111	Equipment Golf - Should be valid for default KEM (13 digits)
+11111111111111	Equipment Hotel - Should be invalid for default KEM (14 digits)
+
+Additional Data Lines:
+This is a descriptive line without any court prefix.
+No validation should be attempted on this line.
+
+000000000	All zeros equipment - Should be valid for default KEM
+9999999999999	All nines equipment - Should be valid for default KEM
+
+===================================
+Expected Results (assuming KEM default):
+- Lines without prefixes should use default court rules
+- Valid for KEM (9-13 digits): 6 items
+- Invalid for KEM: 4 items
+- Non-data lines: ignored

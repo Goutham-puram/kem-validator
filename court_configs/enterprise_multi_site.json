@@ -1,0 +1,162 @@
+{
+  "description": "Enterprise multi-site configuration with FTP integration",
+  "use_case": "Large organizations with multiple sites and automated FTP processing",
+  "setup_instructions": [
+    "Copy this configuration to courts_config.json",
+    "All courts enabled with FTP integration",
+    "Different retention policies per court type",
+    "Performance monitoring enabled for enterprise oversight"
+  ],
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court - Primary Site",
+    "description": "Primary processing center",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 12
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/sites/kirkland/incoming",
+      "output_path": "/ftp/sites/kirkland/processed",
+      "error_path": "/ftp/sites/kirkland/errors",
+      "archive_path": "/ftp/sites/kirkland/archive"
+    },
+    "processing": {
+      "batch_size": 100,
+      "timeout_seconds": 300,
+      "retry_attempts": 3
+    }
+  },
+
+  "SEA": {
+    "enabled": true,
+    "name": "Seattle Court - Regional Site",
+    "description": "Seattle regional processing center",
+    "validation_rules": {
+      "min_digits": 8,
+      "max_digits": 12,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "sea-inbox",
+      "output_dir": "sea-output",
+      "invalid_dir": "sea-invalid",
+      "processed_dir": "sea-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 18
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/sites/seattle/incoming",
+      "output_path": "/ftp/sites/seattle/processed",
+      "error_path": "/ftp/sites/seattle/errors",
+      "archive_path": "/ftp/sites/seattle/archive"
+    },
+    "processing": {
+      "batch_size": 75,
+      "timeout_seconds": 400,
+      "retry_attempts": 4
+    }
+  },
+
+  "TAC": {
+    "enabled": true,
+    "name": "Tacoma Court - Satellite Site",
+    "description": "Tacoma satellite processing center",
+    "validation_rules": {
+      "min_digits": 10,
+      "max_digits": 14,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "tac-inbox",
+      "output_dir": "tac-output",
+      "invalid_dir": "tac-invalid",
+      "processed_dir": "tac-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/sites/tacoma/incoming",
+      "output_path": "/ftp/sites/tacoma/processed",
+      "error_path": "/ftp/sites/tacoma/errors",
+      "archive_path": "/ftp/sites/tacoma/archive"
+    },
+    "processing": {
+      "batch_size": 50,
+      "timeout_seconds": 600,
+      "retry_attempts": 5
+    }
+  },
+
+  "ENT": {
+    "enabled": true,
+    "name": "Enterprise Processing Center",
+    "description": "Centralized enterprise document processing",
+    "validation_rules": {
+      "min_digits": 6,
+      "max_digits": 20,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "ent-inbox",
+      "output_dir": "ent-output",
+      "invalid_dir": "ent-invalid",
+      "processed_dir": "ent-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 36
+    },
+    "ftp": {
+      "enabled": true,
+      "input_path": "/ftp/enterprise/incoming",
+      "output_path": "/ftp/enterprise/processed",
+      "error_path": "/ftp/enterprise/errors",
+      "archive_path": "/ftp/enterprise/archive",
+      "settings": {
+        "polling_interval": 15,
+        "batch_size": 100
+      }
+    },
+    "processing": {
+      "batch_size": 200,
+      "timeout_seconds": 600,
+      "retry_attempts": 3,
+      "parallel_processing": true
+    }
+  },
+
+  "global_settings": {
+    "default_court": "KEM",
+    "archive_base_dir": "archive",
+    "database_path": "kem_validator.db",
+    "backup_enabled": true,
+    "logging_level": "INFO",
+    "max_file_size_mb": 100,
+    "allowed_extensions": [".txt", ".pdf", ".png", ".jpg", ".tiff"],
+    "concurrent_courts": 4,
+    "performance_monitoring": {
+      "enabled": true,
+      "report_interval_hours": 2
+    }
+  }
+}

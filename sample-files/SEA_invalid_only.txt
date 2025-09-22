@@ -1,0 +1,31 @@
+SEA COURT - ALL INVALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing invalid cases for SEA (must be 8-12 digits):
+
+Too Short (< 8 digits):
+SEA	1	Single Digit
+SEA	12	Two Digits
+SEA	1234567	Seven Digits
+
+Too Long (> 12 digits):
+SEA	1234567890123	Thirteen Digits
+SEA	12345678901234	Fourteen Digits
+SEA	123456789012345	Fifteen Digits
+
+No Valid Digits:
+SEA	SEATTLE	Pure Letters
+SEA	PORTSEATTLE	Port Name
+SEA	@#$%^&*	Special Characters
+SEA		Empty ID
+SEA	ΑΒΓΔΕΖΗΘ	Greek Letters
+
+Mixed Invalid:
+SEA	SEA123	Only 3 digits
+SEA	PORT456DOCK	Only 3 digits scattered
+SEA	Container#789	Only 3 digits with text
+
+===================================
+All 15 entries should FAIL validation
+Expected success rate: 0%

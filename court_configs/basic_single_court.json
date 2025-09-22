@@ -1,0 +1,45 @@
+{
+  "description": "Basic single-court configuration (KEM only)",
+  "use_case": "Backward compatibility - maintains existing KEM functionality",
+  "setup_instructions": [
+    "Copy this configuration to courts_config.json",
+    "This provides the same functionality as the original single-court system",
+    "Perfect for users who don't need multi-court features"
+  ],
+
+  "KEM": {
+    "enabled": true,
+    "name": "Kirkland Court",
+    "description": "Primary court system with standard 9-13 digit validation",
+    "validation_rules": {
+      "min_digits": 9,
+      "max_digits": 13,
+      "prefix_required": true
+    },
+    "directories": {
+      "input_dir": "kem-inbox",
+      "output_dir": "kem-output",
+      "invalid_dir": "kem-invalid",
+      "processed_dir": "kem-processed"
+    },
+    "archive": {
+      "enabled": true,
+      "retention_months": 6
+    },
+    "ftp": {
+      "enabled": false,
+      "input_path": "/ftp/courts/kem/incoming",
+      "output_path": "/ftp/courts/kem/processed"
+    }
+  },
+
+  "global_settings": {
+    "default_court": "KEM",
+    "archive_base_dir": "archive",
+    "database_path": "kem_validator.db",
+    "backup_enabled": true,
+    "logging_level": "INFO",
+    "max_file_size_mb": 50,
+    "allowed_extensions": [".txt", ".pdf", ".png", ".jpg"]
+  }
+}

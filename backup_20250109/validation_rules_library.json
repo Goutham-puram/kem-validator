@@ -1,0 +1,440 @@
+{
+  "description": "Validation Rules Library - Reusable validation patterns for court configuration",
+  "version": "1.0",
+  "last_updated": "2025-09-18",
+  "usage_instructions": [
+    "This library contains pre-defined validation rule templates",
+    "Copy the appropriate rule set to your court configuration",
+    "Modify as needed for your specific requirements",
+    "Each rule set includes examples and use cases"
+  ],
+
+  "standard_patterns": {
+    "short_range": {
+      "description": "Short ID range for quick processing",
+      "validation_rules": {
+        "min_digits": 6,
+        "max_digits": 10,
+        "prefix_required": true
+      },
+      "use_cases": ["Small organizations", "Simple tracking", "Quick validation"],
+      "examples": {
+        "valid": ["ABC 123456", "ABC 1234567890"],
+        "invalid": ["ABC 12345", "ABC 12345678901"]
+      }
+    },
+
+    "medium_range": {
+      "description": "Medium ID range for standard processing",
+      "validation_rules": {
+        "min_digits": 8,
+        "max_digits": 14,
+        "prefix_required": true
+      },
+      "use_cases": ["Standard organizations", "Regional courts", "Medium-scale processing"],
+      "examples": {
+        "valid": ["ABC 12345678", "ABC 12345678901234"],
+        "invalid": ["ABC 1234567", "ABC 123456789012345"]
+      }
+    },
+
+    "long_range": {
+      "description": "Long ID range for complex systems",
+      "validation_rules": {
+        "min_digits": 10,
+        "max_digits": 20,
+        "prefix_required": true
+      },
+      "use_cases": ["Large organizations", "Complex tracking", "Enterprise systems"],
+      "examples": {
+        "valid": ["ABC 1234567890", "ABC 12345678901234567890"],
+        "invalid": ["ABC 123456789", "ABC 123456789012345678901"]
+      }
+    },
+
+    "flexible_range": {
+      "description": "Very flexible range for legacy or mixed systems",
+      "validation_rules": {
+        "min_digits": 1,
+        "max_digits": 50,
+        "prefix_required": false
+      },
+      "use_cases": ["Legacy systems", "Migration scenarios", "Mixed document types"],
+      "examples": {
+        "valid": ["1", "ABC 123", "1234567890123456789012345678901234567890"],
+        "invalid": ["", "Non-numeric letters only"]
+      }
+    }
+  },
+
+  "specialized_patterns": {
+    "exact_match": {
+      "description": "Exact digit count requirement",
+      "validation_rules": {
+        "min_digits": 12,
+        "max_digits": 12,
+        "prefix_required": true
+      },
+      "use_cases": ["Financial institutions", "Strict compliance", "Standardized systems"],
+      "examples": {
+        "valid": ["FIN 123456789012"],
+        "invalid": ["FIN 12345678901", "FIN 1234567890123"]
+      },
+      "notes": "Commonly used for financial account numbers, SSNs, credit cards"
+    },
+
+    "government_standard": {
+      "description": "Government document standard",
+      "validation_rules": {
+        "min_digits": 9,
+        "max_digits": 15,
+        "prefix_required": true
+      },
+      "use_cases": ["Government agencies", "Official documents", "Compliance requirements"],
+      "examples": {
+        "valid": ["GOV 123456789", "GOV 123456789012345"],
+        "invalid": ["GOV 12345678", "GOV 1234567890123456"]
+      }
+    },
+
+    "healthcare_hipaa": {
+      "description": "Healthcare-compliant validation (HIPAA considerations)",
+      "validation_rules": {
+        "min_digits": 8,
+        "max_digits": 16,
+        "prefix_required": true
+      },
+      "use_cases": ["Healthcare providers", "Medical records", "Patient identification"],
+      "examples": {
+        "valid": ["MED 12345678", "MED 1234567890123456"],
+        "invalid": ["MED 1234567", "MED 12345678901234567"]
+      },
+      "security_notes": "Consider additional encryption for healthcare data"
+    },
+
+    "education_ferpa": {
+      "description": "Education-compliant validation (FERPA considerations)",
+      "validation_rules": {
+        "min_digits": 7,
+        "max_digits": 12,
+        "prefix_required": true
+      },
+      "use_cases": ["Educational institutions", "Student records", "Academic tracking"],
+      "examples": {
+        "valid": ["EDU 1234567", "EDU 123456789012"],
+        "invalid": ["EDU 123456", "EDU 1234567890123"]
+      }
+    }
+  },
+
+  "industry_specific": {
+    "banking": {
+      "description": "Banking and financial services",
+      "validation_rules": {
+        "min_digits": 10,
+        "max_digits": 16,
+        "prefix_required": true
+      },
+      "use_cases": ["Banks", "Credit unions", "Financial processors"],
+      "compliance": ["PCI DSS", "SOX", "Basel III"],
+      "retention_months": 84,
+      "examples": {
+        "valid": ["BANK 1234567890", "BANK 1234567890123456"],
+        "invalid": ["BANK 123456789", "BANK 12345678901234567"]
+      }
+    },
+
+    "insurance": {
+      "description": "Insurance industry standards",
+      "validation_rules": {
+        "min_digits": 8,
+        "max_digits": 15,
+        "prefix_required": true
+      },
+      "use_cases": ["Insurance companies", "Claims processing", "Policy management"],
+      "compliance": ["State insurance regulations", "NAIC standards"],
+      "retention_months": 60,
+      "examples": {
+        "valid": ["INS 12345678", "INS 123456789012345"],
+        "invalid": ["INS 1234567", "INS 1234567890123456"]
+      }
+    },
+
+    "legal": {
+      "description": "Legal document processing",
+      "validation_rules": {
+        "min_digits": 6,
+        "max_digits": 20,
+        "prefix_required": true
+      },
+      "use_cases": ["Law firms", "Court systems", "Legal document management"],
+      "compliance": ["Bar association rules", "Court requirements"],
+      "retention_months": 120,
+      "examples": {
+        "valid": ["LEG 123456", "LEG 12345678901234567890"],
+        "invalid": ["LEG 12345", "LEG 123456789012345678901"]
+      }
+    },
+
+    "manufacturing": {
+      "description": "Manufacturing and inventory tracking",
+      "validation_rules": {
+        "min_digits": 6,
+        "max_digits": 18,
+        "prefix_required": true
+      },
+      "use_cases": ["Manufacturing", "Inventory management", "Supply chain"],
+      "compliance": ["ISO standards", "Quality management"],
+      "retention_months": 36,
+      "examples": {
+        "valid": ["MFG 123456", "MFG 123456789012345678"],
+        "invalid": ["MFG 12345", "MFG 1234567890123456789"]
+      }
+    }
+  },
+
+  "processing_templates": {
+    "high_speed": {
+      "description": "Optimized for high-speed processing",
+      "processing": {
+        "batch_size": 500,
+        "timeout_seconds": 30,
+        "retry_attempts": 1,
+        "parallel_processing": true
+      },
+      "archive": {
+        "enabled": true,
+        "retention_months": 1
+      },
+      "use_cases": ["High-volume processing", "Real-time systems", "Performance-critical"]
+    },
+
+    "high_accuracy": {
+      "description": "Optimized for maximum accuracy",
+      "processing": {
+        "batch_size": 25,
+        "timeout_seconds": 600,
+        "retry_attempts": 5,
+        "parallel_processing": false
+      },
+      "archive": {
+        "enabled": true,
+        "retention_months": 12
+      },
+      "use_cases": ["Financial processing", "Legal documents", "Compliance-critical"]
+    },
+
+    "balanced": {
+      "description": "Balanced speed and accuracy",
+      "processing": {
+        "batch_size": 100,
+        "timeout_seconds": 300,
+        "retry_attempts": 3,
+        "parallel_processing": true
+      },
+      "archive": {
+        "enabled": true,
+        "retention_months": 6
+      },
+      "use_cases": ["General processing", "Standard operations", "Most common"]
+    }
+  },
+
+  "ftp_templates": {
+    "basic_ftp": {
+      "description": "Basic FTP configuration",
+      "ftp": {
+        "enabled": true,
+        "input_path": "/ftp/courts/{court}/incoming",
+        "output_path": "/ftp/courts/{court}/processed",
+        "error_path": "/ftp/courts/{court}/errors"
+      },
+      "use_cases": ["Simple FTP setup", "Single directory structure"]
+    },
+
+    "enterprise_ftp": {
+      "description": "Enterprise FTP with full structure",
+      "ftp": {
+        "enabled": true,
+        "input_path": "/ftp/courts/{court}/incoming",
+        "output_path": "/ftp/courts/{court}/processed",
+        "error_path": "/ftp/courts/{court}/errors",
+        "archive_path": "/ftp/courts/{court}/archive",
+        "settings": {
+          "polling_interval": 30,
+          "batch_size": 50,
+          "max_file_age": 3600
+        }
+      },
+      "use_cases": ["Large organizations", "Multiple sites", "Complex routing"]
+    },
+
+    "high_frequency": {
+      "description": "High-frequency FTP polling",
+      "ftp": {
+        "enabled": true,
+        "input_path": "/ftp/courts/{court}/incoming",
+        "output_path": "/ftp/courts/{court}/processed",
+        "error_path": "/ftp/courts/{court}/errors",
+        "settings": {
+          "polling_interval": 5,
+          "batch_size": 25,
+          "max_file_age": 300
+        }
+      },
+      "use_cases": ["Real-time processing", "Time-sensitive documents"]
+    }
+  },
+
+  "compliance_templates": {
+    "financial_compliance": {
+      "description": "Financial industry compliance settings",
+      "archive": {
+        "enabled": true,
+        "retention_months": 84
+      },
+      "processing": {
+        "batch_size": 50,
+        "timeout_seconds": 600,
+        "retry_attempts": 5
+      },
+      "logging_level": "DEBUG",
+      "backup_enabled": true,
+      "compliance_standards": ["SOX", "PCI DSS", "Basel III"]
+    },
+
+    "healthcare_compliance": {
+      "description": "Healthcare industry compliance (HIPAA)",
+      "archive": {
+        "enabled": true,
+        "retention_months": 72
+      },
+      "processing": {
+        "batch_size": 25,
+        "timeout_seconds": 900,
+        "retry_attempts": 3
+      },
+      "logging_level": "INFO",
+      "backup_enabled": true,
+      "compliance_standards": ["HIPAA", "HITECH"],
+      "security_notes": "Ensure encryption at rest and in transit"
+    },
+
+    "government_compliance": {
+      "description": "Government compliance requirements",
+      "archive": {
+        "enabled": true,
+        "retention_months": 60
+      },
+      "processing": {
+        "batch_size": 75,
+        "timeout_seconds": 450,
+        "retry_attempts": 4
+      },
+      "logging_level": "INFO",
+      "backup_enabled": true,
+      "compliance_standards": ["FISMA", "FedRAMP"]
+    }
+  },
+
+  "quick_start_combinations": {
+    "small_office": {
+      "description": "Configuration for small office (1-50 users)",
+      "recommended_courts": ["KEM"],
+      "validation_pattern": "medium_range",
+      "processing_template": "balanced",
+      "ftp_template": "basic_ftp",
+      "retention_months": 12
+    },
+
+    "regional_office": {
+      "description": "Configuration for regional office (50-500 users)",
+      "recommended_courts": ["KEM", "SEA"],
+      "validation_pattern": "medium_range",
+      "processing_template": "balanced",
+      "ftp_template": "enterprise_ftp",
+      "retention_months": 24
+    },
+
+    "enterprise": {
+      "description": "Configuration for enterprise (500+ users)",
+      "recommended_courts": ["KEM", "SEA", "TAC", "ENT"],
+      "validation_pattern": "long_range",
+      "processing_template": "high_speed",
+      "ftp_template": "enterprise_ftp",
+      "retention_months": 36
+    },
+
+    "financial_institution": {
+      "description": "Configuration for financial institutions",
+      "recommended_courts": ["KEM", "FIN"],
+      "validation_pattern": "exact_match",
+      "processing_template": "high_accuracy",
+      "compliance_template": "financial_compliance",
+      "retention_months": 84
+    }
+  },
+
+  "migration_helpers": {
+    "single_to_dual": {
+      "description": "Migrate from single court to two courts",
+      "steps": [
+        "Add second court configuration",
+        "Create new directories",
+        "Test with sample files",
+        "Gradually migrate processing"
+      ],
+      "recommended_pattern": "Keep KEM enabled, add SEA"
+    },
+
+    "legacy_upgrade": {
+      "description": "Upgrade legacy system to multi-court",
+      "steps": [
+        "Backup existing configuration",
+        "Create multi-court config with KEM",
+        "Test backward compatibility",
+        "Add additional courts as needed"
+      ],
+      "validation_pattern": "flexible_range"
+    }
+  },
+
+  "testing_configurations": {
+    "development": {
+      "description": "Development and testing environment",
+      "validation_rules": {
+        "min_digits": 1,
+        "max_digits": 20,
+        "prefix_required": false
+      },
+      "processing": {
+        "batch_size": 10,
+        "timeout_seconds": 60,
+        "retry_attempts": 1
+      },
+      "archive": {
+        "enabled": false
+      },
+      "logging_level": "DEBUG"
+    },
+
+    "staging": {
+      "description": "Staging environment mimicking production",
+      "validation_rules": {
+        "min_digits": 9,
+        "max_digits": 13,
+        "prefix_required": true
+      },
+      "processing": {
+        "batch_size": 50,
+        "timeout_seconds": 300,
+        "retry_attempts": 3
+      },
+      "archive": {
+        "enabled": true,
+        "retention_months": 1
+      },
+      "logging_level": "INFO"
+    }
+  }
+}

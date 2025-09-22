@@ -1,0 +1,34 @@
+MULTI-COURT BATCH TEST - ALL COURTS
+Generated: 2025-09-18 14:41:07
+Testing multiple courts in single file
+===================================
+
+KEM COURT ENTRIES (9-13 digits):
+KEM	123456789	KEM Equipment 1 - Valid
+KEM	1234567890123	KEM Equipment 2 - Valid
+KEM	12345678	KEM Equipment 3 - Invalid (too short)
+KEM	12345678901234	KEM Equipment 4 - Invalid (too long)
+
+SEA COURT ENTRIES (8-12 digits):
+SEA	12345678	SEA Equipment 1 - Valid
+SEA	123456789012	SEA Equipment 2 - Valid
+SEA	1234567	SEA Equipment 3 - Invalid (too short)
+SEA	1234567890123	SEA Equipment 4 - Invalid (too long)
+
+TAC COURT ENTRIES (10-14 digits):
+TAC	1234567890	TAC Equipment 1 - Valid
+TAC	12345678901234	TAC Equipment 2 - Valid
+TAC	123456789	TAC Equipment 3 - Invalid (too short)
+TAC	123456789012345	TAC Equipment 4 - Invalid (too long)
+
+CROSS-COURT CONFUSION TESTS:
+KEM	12345678	KEM with SEA-valid length - Invalid for KEM
+SEA	123456789012345	SEA with TAC-invalid length - Invalid for SEA
+TAC	12345678	TAC with SEA-valid length - Invalid for TAC
+
+===================================
+Expected Results by Court:
+- KEM: 2 valid, 3 invalid
+- SEA: 2 valid, 3 invalid
+- TAC: 2 valid, 3 invalid
+Total: 6 valid, 9 invalid

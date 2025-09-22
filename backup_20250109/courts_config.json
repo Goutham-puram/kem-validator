@@ -1,0 +1,218 @@
+{
+  "version": "1.0",
+  "default_court": "KEM",
+  "courts": {
+    "KEM": {
+      "name": "Kirkland Court",
+      "full_name": "Kirkland Equipment Management",
+      "enabled": true,
+      "validation_rules": {
+        "min_digits": 9,
+        "max_digits": 13,
+        "prefix_required": true,
+        "prefix": "KEM",
+        "allow_alphanumeric": true,
+        "case_sensitive": false
+      },
+      "directories": {
+        "input_dir": "kem-inbox",
+        "output_dir": "kem-results",
+        "processed_dir": "processed-archive",
+        "invalid_dir": "invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/kem-inbox/",
+        "results_path": "/PAMarchive/SeaTac/kem-results/",
+        "processed_path": "/PAMarchive/SeaTac/processed-archive/",
+        "invalid_path": "/PAMarchive/SeaTac/invalid-archive/"
+      },
+      "database": {
+        "table_suffix": "kem",
+        "retention_days": 365
+      },
+      "file_naming": {
+        "csv_prefix": "kem_validation",
+        "archive_prefix": "kem_archive"
+      }
+    },
+    "SEA": {
+      "name": "Seattle Court",
+      "full_name": "Seattle Municipal Court Document System",
+      "enabled": false,
+      "validation_rules": {
+        "min_digits": 8,
+        "max_digits": 12,
+        "prefix_required": true,
+        "prefix": "SEA",
+        "allow_alphanumeric": true,
+        "case_sensitive": false
+      },
+      "directories": {
+        "input_dir": "sea-inbox",
+        "output_dir": "sea-results",
+        "processed_dir": "sea-processed-archive",
+        "invalid_dir": "sea-invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": false,
+        "base_path": "/PAMarchive/Seattle/",
+        "inbox_path": "/PAMarchive/Seattle/sea-inbox/",
+        "results_path": "/PAMarchive/Seattle/sea-results/",
+        "processed_path": "/PAMarchive/Seattle/sea-processed-archive/",
+        "invalid_path": "/PAMarchive/Seattle/sea-invalid-archive/"
+      },
+      "database": {
+        "table_suffix": "sea",
+        "retention_days": 180
+      },
+      "file_naming": {
+        "csv_prefix": "sea_validation",
+        "archive_prefix": "sea_archive"
+      }
+    },
+    "TAC": {
+      "name": "Tacoma Court",
+      "full_name": "Tacoma District Court Records",
+      "enabled": false,
+      "validation_rules": {
+        "min_digits": 10,
+        "max_digits": 15,
+        "prefix_required": true,
+        "prefix": "TAC",
+        "allow_alphanumeric": false,
+        "case_sensitive": true
+      },
+      "directories": {
+        "input_dir": "tac-inbox",
+        "output_dir": "tac-results",
+        "processed_dir": "tac-processed-archive",
+        "invalid_dir": "tac-invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": false,
+        "base_path": "/PAMarchive/Tacoma/",
+        "inbox_path": "/PAMarchive/Tacoma/tac-inbox/",
+        "results_path": "/PAMarchive/Tacoma/tac-results/",
+        "processed_path": "/PAMarchive/Tacoma/tac-processed-archive/",
+        "invalid_path": "/PAMarchive/Tacoma/tac-invalid-archive/"
+      },
+      "database": {
+        "table_suffix": "tac",
+        "retention_days": 270
+      },
+      "file_naming": {
+        "csv_prefix": "tac_validation",
+        "archive_prefix": "tac_archive"
+      }
+    }
+  },
+  "global_settings": {
+    "auto_detect_court": true,
+    "fallback_to_default": true,
+    "create_directories": true,
+    "log_court_detection": true,
+    "supported_file_types": [".txt", ".pdf", ".png", ".jpg", ".jpeg", ".tiff", ".bmp"],
+    "max_file_size_mb": 10,
+    "encoding": "utf-8"
+  },
+  "court_detection": {
+    "methods": [
+      "explicit_parameter",
+      "filename_prefix",
+      "file_path",
+      "file_content",
+      "directory_mapping",
+      "file_pattern_mapping"
+    ],
+    "audit_logging": {
+      "enabled": true,
+      "log_all_decisions": true,
+      "log_fallbacks": true,
+      "log_conflicts": true
+    },
+    "filename_patterns": {
+      "KEM": ["KEM_", "KEM-", "kem_", "kem-"],
+      "SEA": ["SEA_", "SEA-", "sea_", "sea-"],
+      "TAC": ["TAC_", "TAC-", "tac_", "tac-"]
+    },
+    "path_patterns": {
+      "KEM": ["kem-", "KEM-", "/kem/", "/KEM/", "\\kem\\", "\\KEM\\"],
+      "SEA": ["sea-", "SEA-", "/sea/", "/SEA/", "\\sea\\", "\\SEA\\"],
+      "TAC": ["tac-", "TAC-", "/tac/", "/TAC/", "\\tac\\", "\\TAC\\"]
+    },
+    "content_prefixes": {
+      "KEM": ["KEM\\s", "KEM\\t", "^KEM\\s", "^KEM\\t"],
+      "SEA": ["SEA\\s", "SEA\\t", "^SEA\\s", "^SEA\\t"],
+      "TAC": ["TAC\\s", "TAC\\t", "^TAC\\s", "^TAC\\t"]
+    },
+    "file_pattern_mapping": {
+      "KEM": [
+        "*.kem",
+        "*kirkland*",
+        "*kem_*",
+        "*_kem_*",
+        "PAMarchive/SeaTac/*"
+      ],
+      "SEA": [
+        "*.sea",
+        "*seattle*",
+        "*sea_*",
+        "*_sea_*",
+        "PAMarchive/Seattle/*"
+      ],
+      "TAC": [
+        "*.tac",
+        "*tacoma*",
+        "*tac_*",
+        "*_tac_*",
+        "PAMarchive/Tacoma/*"
+      ]
+    },
+    "directory_mapping": {
+      "kem-inbox": "KEM",
+      "kem-results": "KEM",
+      "sea-inbox": "SEA",
+      "sea-results": "SEA",
+      "tac-inbox": "TAC",
+      "tac-results": "TAC",
+      "/PAMarchive/SeaTac/": "KEM",
+      "/PAMarchive/Seattle/": "SEA",
+      "/PAMarchive/Tacoma/": "TAC"
+    },
+    "fallback_behavior": {
+      "use_content_detection": true,
+      "content_scan_lines": 20,
+      "require_confidence_threshold": false,
+      "default_on_no_match": "KEM"
+    }
+  },
+  "migration": {
+    "backward_compatibility": {
+      "enabled": true,
+      "legacy_directories": true,
+      "legacy_database_schema": true
+    },
+    "version_history": [
+      {
+        "version": "1.0",
+        "date": "2024-01-01",
+        "description": "Initial multi-court configuration",
+        "changes": ["Added KEM court configuration", "Added SEA and TAC placeholders"]
+      }
+    ]
+  },
+  "validation": {
+    "schema_version": "1.0",
+    "required_fields": ["name", "enabled", "validation_rules"],
+    "validation_rules_schema": {
+      "min_digits": "integer >= 1",
+      "max_digits": "integer >= min_digits",
+      "prefix_required": "boolean",
+      "prefix": "string (required if prefix_required=true)",
+      "allow_alphanumeric": "boolean",
+      "case_sensitive": "boolean"
+    }
+  }
+}

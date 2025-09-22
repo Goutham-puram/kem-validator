@@ -15,10 +15,10 @@ python-magic>=0.4.27
 pytesseract>=0.3.10  # Requires Tesseract binary installation
 
 # Optional: OpenAI API (uncomment if using)
-# openai>=1.0.0
+openai>=1.0.0
 
 # Optional: Azure Document Intelligence (uncomment if using)
-# azure-ai-formrecognizer>=3.3.0
+azure-ai-formrecognizer>=3.3.0
 
 # Database
 sqlalchemy>=2.0.0

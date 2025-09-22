@@ -1,0 +1,37 @@
+NO PREFIX TEST - MIXED FORMATS
+Generated: 2025-09-18 14:41:07
+Testing various data formats without court prefixes
+===================================
+
+CSV-style data (no prefixes):
+123456789,Pump Assembly,Location A
+87654321,Valve Unit,Location B
+1234567890123,Control Panel,Location C
+12345678,Sensor Pack,Location D
+
+Tab-separated data (no prefixes):
+987654321	Motor Unit	Building 1
+1111111111111	Generator Set	Building 2
+222222222	Transformer	Building 3
+33333333333333	Switch Gear	Building 4
+
+Space-separated data (no prefixes):
+444444444 Relay Panel Room 5
+5555555555555 Circuit Breaker Room 6
+66666666 Distribution Board Room 7
+777777777777777 Control System Room 8
+
+Descriptive text without numeric data:
+This equipment inventory covers all major components.
+Regular maintenance is scheduled quarterly.
+Contact facility management for access requirements.
+
+Mixed alphanumeric (no prefixes):
+A1B2C3D4E5F6G7H8I9	Mixed Alpha Equipment 1
+X8Y9Z0W1V2U3T4S5R6Q7	Mixed Alpha Equipment 2
+
+===================================
+Expected Results (assuming default court behavior):
+- Should process numeric portions using default court rules
+- Format variations should not affect validation
+- Non-numeric lines should be ignored or marked as informational
