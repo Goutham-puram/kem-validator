@@ -1,0 +1,78 @@
+# trace_actual_error.py
+print("Tracing the actual KEM processing error...")
+
+from kem_validator_local import Config, FileProcessor, KemValidator, DatabaseManager
+import os
+
+test_file = "ftp_temp\\downloads\\KEM_KEM_20250501083031.txt"
+
+print(f"Testing file: {test_file}")
+print(f"File exists: {os.path.exists(test_file)}")
+
+if os.path.exists(test_file):
+    print(f"File size: {os.path.getsize(test_file)} bytes")
+    
+    # Test each component
+    print("\n1. Testing Config...")
+    try:
+        config = Config()
+        print(f"   ✅ Config created: {config.db_path}")
+    except Exception as e:
+        print(f"   ❌ Config error: {e}")
+    
+    print("\n2. Testing KemValidator...")
+    try:
+        validator = KemValidator()
+        print(f"   ✅ KemValidator created")
+        
+        # Check if validator has the method that might be failing
+        if hasattr(validator, 'validate'):
+            print("   Has validate method")
+        if hasattr(validator, 'process'):
+            print("   Has process method")
+            
+    except Exception as e:
+        print(f"   ❌ KemValidator error: {e}")
+    
+    print("\n3. Testing FileProcessor...")
+    try:
+        file_processor = FileProcessor(config)
+        print(f"   ✅ FileProcessor created")
+        
+        # Try to process the file
+        print("\n4. Attempting to process file...")
+        result = file_processor.process_file(test_file, court_code='KEM')
+        print(f"   ✅ Processing succeeded: {result}")
+        
+    except AttributeError as ae:
+        print(f"   ❌ AttributeError: {ae}")
+        import traceback
+        traceback.print_exc()
+        
+    except Exception as e:
+        print(f"   ❌ Processing error: {e}")
+        import traceback
+        traceback.print_exc()
+
+print("\n" + "="*50)
+print("Checking for None assignments in processing...")
+
+# Look for the specific error pattern
+with open('kem_validator_local.py', 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+
+# Find FileProcessor class and its process_file method
+for i, line in enumerate(lines):
+    if 'class FileProcessor' in line:
+        print(f"Found FileProcessor at line {i+1}")
+        # Look for process_file method
+        for j in range(i, min(i+200, len(lines))):
+            if 'def process_file' in lines[j]:
+                print(f"Found process_file method at line {j+1}")
+                # Check for None assignments in next 50 lines
+                for k in range(j, min(j+50, len(lines))):
+                    if '= None' in lines[k] or '=None' in lines[k]:
+                        if '[' in lines[k:k+3]:  # Check if followed by bracket access
+                            print(f"   ⚠️ Line {k+1}: {lines[k].strip()}")
+                break
+        break

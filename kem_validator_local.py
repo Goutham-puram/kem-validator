@@ -952,6 +952,7 @@ class FileProcessor:
         except Exception as e:
             logger.debug(f"Legacy content detection not available: {e}")
 
+        try:
             # Validate content using court-specific validator
             if hasattr(self.validator, 'validate_text_for_court'):
                 validation_results = self.validator.validate_text_for_court(text_content, court_code)

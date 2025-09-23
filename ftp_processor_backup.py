@@ -44,7 +44,6 @@ class FTPConfig:
     """Enhanced FTP Configuration with multi-court support"""
     def __init__(self, config_path: str = "ftp_config.json"):
         self.load_config(config_path)
-        self.court_paths = {}  # Initialize court paths dictionary
 
     def load_config(self, config_path: str):
         """Load enhanced FTP configuration from JSON file"""
