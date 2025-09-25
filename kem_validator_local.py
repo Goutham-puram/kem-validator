@@ -266,10 +266,15 @@ class LegacyKemValidator:
             if len(parts) >= 2 and parts[0] == 'KEM':
                 return parts[1]
 
-        # Fall back to regex for space-separated format
-        match = re.search(r'\bKEM\s+(\S+)', line)
+        # Fall back to regex for space-separated format (anchor to start)
+        match = re.search(r'^\s*KEM\s+(\S+)', line)
         if match:
-            return match.group(1)
+            token = match.group(1).strip()
+            digits_only = ''.join(c for c in token if c.isdigit())
+            # Only treat as a KEM data line if token has enough digits
+            if len(digits_only) >= 9:
+                return token
+            return None
 
         return None
 
@@ -993,14 +998,35 @@ class FileProcessor:
             return {"status": "failed", "reason": str(e), "court_code": court_code, "detection": detection_result}
     
     def _calculate_stats(self, results: List[Dict], court_code: str = 'KEM') -> Dict:
-        """Calculate validation statistics with court support"""
+        """Calculate validation statistics with court support and header safeguards"""
+        import re
         total_lines = len(results)
 
-        # Dynamic detection of court lines (support any court, not just KEM)
-        court_line_pattern = f'not_a_{court_code}_line'
-        kem_lines = sum(1 for r in results if r['fail_reason'] != court_line_pattern and r['fail_reason'] != 'not_a_KEM_line')  # Backward compatibility
-        valid_lines = sum(1 for r in results if (r['fail_reason'] != court_line_pattern and r['fail_reason'] != 'not_a_KEM_line') and r['is_valid'])
-        failed_lines = sum(1 for r in results if (r['fail_reason'] != court_line_pattern and r['fail_reason'] != 'not_a_KEM_line') and not r['is_valid'])
+        # Only count lines that are true court data rows:
+        # - start with the court prefix at the beginning of the line (tab or space form)
+        # - have a non-empty parsed ID and at least one digit present
+        prefix = court_code.upper()
+
+        def is_court_row(r: Dict) -> bool:
+            raw = r.get('raw', '') or ''
+            if not raw:
+                return False
+            starts_with_prefix = raw.startswith(f"{prefix}\t") or re.match(rf"^\s*{re.escape(prefix)}\s+", raw)
+            if not starts_with_prefix:
+                return False
+            # Require that some digits were actually found to avoid counting headers
+            if int(r.get('digits_count', 0) or 0) <= 0:
+                return False
+            # Must have a parsed ID token
+            if not (r.get('kem_id_raw') or '').strip():
+                return False
+            return True
+
+        court_rows = [r for r in results if is_court_row(r)]
+
+        kem_lines = len(court_rows)
+        valid_lines = sum(1 for r in court_rows if r.get('is_valid'))
+        failed_lines = sum(1 for r in court_rows if not r.get('is_valid'))
 
         validation_status = 'passed' if failed_lines == 0 and kem_lines > 0 else 'failed'
 

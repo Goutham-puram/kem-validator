@@ -1,5 +1,11 @@
 """
-Streamlit Web Interface for KEM Validator
+    main()
+st.set_page_config(
+    page_title=" File Validator\,
+ layout=\wide\,
+ initial_sidebar_state=\expanded\
+)
+Streamlit Web Interface for File Validator
 Full-featured local web application
 """
 

@@ -117,7 +117,7 @@ class DigitRangeValidator(CourtValidator):
         flags = 0 if self.case_sensitive else re.IGNORECASE
 
         # Pattern for parsing lines
-        self.line_pattern = re.compile(rf'\b{prefix}\s+(\S+)', flags)
+        self.line_pattern = re.compile(rf'^\s*{prefix}\s+(\S+)', flags)
 
     def parse_line(self, line: str) -> Optional[str]:
         """Extract document ID from a line"""
@@ -136,7 +136,13 @@ class DigitRangeValidator(CourtValidator):
         # Fall back to regex for space-separated format
         match = self.line_pattern.search(line)
         if match:
-            return match.group(1)
+            token = match.group(1).strip()
+            digits_only = ''.join(c for c in token if c.isdigit())
+            # Only treat as a document line if the token has enough digits
+            # to plausibly be an ID for this court
+            if len(digits_only) >= self.min_digits:
+                return token
+            return None
 
         return None
 
@@ -207,7 +213,7 @@ class PatternValidator(CourtValidator):
         """Create regex patterns for parsing based on configuration"""
         prefix = re.escape(self.prefix)
         flags = 0 if self.case_sensitive else re.IGNORECASE
-        self.line_pattern = re.compile(rf'\b{prefix}\s+(\S+)', flags)
+        self.line_pattern = re.compile(rf'^\s*{prefix}\s+(\S+)', flags)
 
     def parse_line(self, line: str) -> Optional[str]:
         """Extract document ID from a line (same logic as DigitRangeValidator)"""
@@ -224,7 +230,11 @@ class PatternValidator(CourtValidator):
 
         match = self.line_pattern.search(line)
         if match:
-            return match.group(1)
+            token = match.group(1).strip()
+            # Only treat as a document line if token matches validation pattern
+            if self.validation_pattern.fullmatch(token):
+                return token
+            return None
 
         return None
 

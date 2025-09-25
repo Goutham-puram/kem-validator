@@ -1,787 +1,485 @@
 """
-Streamlit Web Interface for KEM Validator with FTP Integration
+Streamlit Web Interface for File Validator with FTP Integration (cleaned)
 """
 
-import streamlit as st
-import pandas as pd
 import json
-import os
-from datetime import datetime
-import time
 from pathlib import Path
 
-# Import FTP processor
-from ftp_processor import FTPProcessor, FTPConfig
-from kem_validator_local import DatabaseManager
+import pandas as pd
+import streamlit as st
 
-# Import court configuration management
+from ftp_processor import FTPProcessor, FTPConfig, DatabaseManager
+
 try:
     from court_config_manager import CourtConfigManager
     MULTI_COURT_SUPPORT = True
-except ImportError:
+except Exception:
+    CourtConfigManager = None  # type: ignore
     MULTI_COURT_SUPPORT = False
 
-# Page configuration
-st.set_page_config(
-    page_title="Court Validator - FTP Edition",
-    page_icon="🌐",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
-# Initialize session state
+st.set_page_config(page_title="Court Validator - FTP", page_icon="📁", layout="wide")
+
+# Session state
 if 'ftp_processor' not in st.session_state:
     st.session_state.ftp_processor = FTPProcessor()
 if 'connected' not in st.session_state:
     st.session_state.connected = False
-if 'processing' not in st.session_state:
-    st.session_state.processing = False
 if 'selected_court' not in st.session_state:
     st.session_state.selected_court = 'KEM'
 
-# Initialize court configuration manager
+# Courts
 if MULTI_COURT_SUPPORT:
     if 'court_manager' not in st.session_state:
-        st.session_state.court_manager = CourtConfigManager()
+        st.session_state.court_manager = CourtConfigManager()  # type: ignore
     if 'available_courts' not in st.session_state:
         try:
-            courts_data = st.session_state.court_manager.get_all_courts()
-            if isinstance(courts_data, dict):
-                st.session_state.available_courts = [
-                    code for code, court in courts_data.items()
-                    if hasattr(court, 'enabled') and court.enabled
-                ]
-            else:
-                st.session_state.available_courts = ['KEM']  # fallback
-                st.warning(f"Unexpected courts data type: {type(courts_data)}")
-        except AttributeError as e:
-            st.session_state.available_courts = ['KEM']  # fallback
-            st.error(f"Court configuration error: {e}")
+            courts = st.session_state.court_manager.get_all_courts()
+            st.session_state.available_courts = [c for c, v in courts.items() if getattr(v, 'enabled', False)]
+        except Exception:
+            st.session_state.available_courts = ['KEM']
+
 
 def main():
-    """Main application"""
-    
-    # Header
-    if MULTI_COURT_SUPPORT and len(st.session_state.available_courts) > 1:
-        st.title("🌐 Court Validator - FTP Integration")
-        st.markdown("Process court validation files directly from FTP server")
-    else:
-        st.title("🌐 KEM Validator - FTP Integration")
-        st.markdown("Process KEM validation files directly from FTP server")
-
-    # Court selection (only show if multiple courts are available)
-    if MULTI_COURT_SUPPORT and len(st.session_state.available_courts) > 1:
+    # Header + court selection
+    if MULTI_COURT_SUPPORT and len(st.session_state.get('available_courts', [])) > 1:
+        st.title("File Validator - FTP Integration")
         court_options = {}
-        for court_code in st.session_state.available_courts:
-            court_info = st.session_state.court_manager.get_court(court_code)
-            if court_info:
-                court_options[f"{court_info.name} ({court_code})"] = court_code
+        for code in st.session_state.available_courts:
+            ci = st.session_state.court_manager.get_court(code)
+            name = getattr(ci, 'name', code)
+            court_options[f"{name} ({code})"] = code
+        label = st.selectbox("Select court", list(court_options.keys()))
+        st.session_state.selected_court = court_options[label]
+    else:
+        st.title("File Validator - FTP Integration")
 
-        st.markdown("### 🏛️ Court Selection")
-        selected_display = st.selectbox(
-            "Select court for FTP processing",
-            options=list(court_options.keys()),
-            index=0 if 'KEM' in st.session_state.available_courts else 0,
-            help="Choose which court's validation rules and FTP paths to use"
-        )
-        st.session_state.selected_court = court_options[selected_display]
-        st.markdown("---")
-    elif MULTI_COURT_SUPPORT and st.session_state.available_courts:
-        st.session_state.selected_court = st.session_state.available_courts[0]
-    
-    # Sidebar
-    st.sidebar.title("🔌 FTP Connection")
-    
-    # Connection status
+    # Sidebar connection
+    st.sidebar.title("FTP Connection")
     if st.session_state.connected:
-        st.sidebar.success("✅ Connected to FTP")
+        st.sidebar.success("Connected to FTP")
     else:
-        st.sidebar.warning("⚠️ Not connected")
-    
-    # Connection controls
-    col1, col2 = st.sidebar.columns(2)
-    with col1:
-        if st.button("🔗 Connect", disabled=st.session_state.connected):
+        st.sidebar.warning("Not connected")
+    c1, c2 = st.sidebar.columns(2)
+    with c1:
+        if st.button("Connect", disabled=st.session_state.connected):
             connect_to_ftp()
-    with col2:
-        if st.button("🔌 Disconnect", disabled=not st.session_state.connected):
+    with c2:
+        if st.button("Disconnect", disabled=not st.session_state.connected):
             disconnect_from_ftp()
-    
-    # Court status information
-    if MULTI_COURT_SUPPORT:
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("### 🏛️ Court System")
 
-        if len(st.session_state.available_courts) > 1:
-            court_info = st.session_state.court_manager.get_court(st.session_state.selected_court)
-            court_name = court_info.name if court_info else st.session_state.selected_court
-            st.sidebar.info(f"🎯 Active Court\\n{court_name} ({st.session_state.selected_court})")
-
-            # Show available courts
-            st.sidebar.markdown("**Available Courts:**")
-            for court_code in st.session_state.available_courts:
-                court_info = st.session_state.court_manager.get_court(court_code)
-                if court_info:
-                    marker = "🎯" if court_code == st.session_state.selected_court else "•"
-                    st.sidebar.markdown(f"{marker} {court_info.name} ({court_code})")
-        else:
-            court_code = st.session_state.available_courts[0] if st.session_state.available_courts else 'KEM'
-            court_info = st.session_state.court_manager.get_court(court_code)
-            court_name = court_info.name if court_info else "KEM"
-            st.sidebar.info(f"📋 Single court mode\\n{court_name} ({court_code})")
-    else:
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("### 🏛️ Court System")
-        st.sidebar.info("📋 Legacy KEM mode\\nSingle court validation")
-
-    st.sidebar.markdown("---")
-
-    # Navigation
-    page = st.sidebar.radio(
-        "Navigation",
-        ["📊 Dashboard", "📁 FTP Files", "⚡ Process Files",
-         "📈 Analytics", "⚙️ FTP Settings", "📚 Help"]
-    )
-    
-    # Page routing
-    if page == "📊 Dashboard":
+    # Nav
+    page = st.sidebar.radio("Navigation", ["Dashboard", "FTP Files", "Process Files", "Analytics", "FTP Settings", "Help"])
+    if page == "Dashboard":
         show_dashboard()
-    elif page == "📁 FTP Files":
+    elif page == "FTP Files":
         show_ftp_files()
-    elif page == "⚡ Process Files":
+    elif page == "Process Files":
         show_process_files()
-    elif page == "📈 Analytics":
+    elif page == "Analytics":
         show_analytics()
-    elif page == "⚙️ FTP Settings":
+    elif page == "FTP Settings":
         show_ftp_settings()
-    elif page == "📚 Help":
+    else:
         show_help()
 
+
 def connect_to_ftp():
-    """Connect to FTP server"""
     try:
-        with st.spinner("Connecting to FTP server..."):
+        with st.spinner("Connecting..."):
             st.session_state.ftp_processor.connect_ftp()
             st.session_state.connected = True
-            st.success("Successfully connected to FTP server!")
+            st.success("Connected")
     except Exception as e:
-        st.error(f"Connection failed: {e}")
+        st.error(f"Failed: {e}")
         st.session_state.connected = False
 
+
 def disconnect_from_ftp():
-    """Disconnect from FTP server"""
     st.session_state.ftp_processor.disconnect_ftp()
     st.session_state.connected = False
-    st.info("Disconnected from FTP server")
+    st.info("Disconnected")
+
 
 def show_dashboard():
-    """Dashboard page"""
-    if MULTI_COURT_SUPPORT and len(st.session_state.available_courts) > 1:
-        st.header("📊 FTP Processing Dashboard")
-
-        # Court filter
-        court_options = {"All Courts": None}
-        for court_code in st.session_state.available_courts:
-            court_info = st.session_state.court_manager.get_court(court_code)
-            if court_info:
-                court_options[f"{court_info.name} ({court_code})"] = court_code
-
-        selected_filter = st.selectbox(
-            "Filter by Court",
-            options=list(court_options.keys()),
-            index=0,
-            help="View metrics for specific court or all courts",
-            key="dashboard_court_filter"
-        )
-        selected_court_filter = court_options[selected_filter]
-
-        st.markdown("---")
-    else:
-        st.header("📊 FTP Processing Dashboard")
-        selected_court_filter = None
-
-    # FTP Status
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric(
-            "FTP Status",
-            "Connected" if st.session_state.connected else "Disconnected",
-            delta="Active" if st.session_state.connected else None
-        )
-
-    # Get database statistics
+    st.header("Dashboard")
     db = DatabaseManager(st.session_state.ftp_processor.kem_config.db_path)
-    if MULTI_COURT_SUPPORT and selected_court_filter:
-        stats = db.get_statistics(selected_court_filter)
+    stats = db.get_statistics()
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("FTP", "Connected" if st.session_state.connected else "Disconnected")
+    c2.metric("Files", stats['total_files'])
+    rate = (stats['passed_files'] / stats['total_files'] * 100) if stats['total_files'] else 0
+    c3.metric("Success %", f"{rate:.1f}%")
+    c4.metric("Court Lines", stats['total_kem_lines'])
+    st.subheader("Recent History")
+    hist = db.get_history(20)
+    if not hist.empty:
+        st.dataframe(hist[['file_name', 'processed_at', 'validation_status', 'kem_lines', 'success_rate']], use_container_width=True)
     else:
-        stats = db.get_statistics()
+        st.info("No history yet")
 
-    with col2:
-        st.metric(
-            "Files Processed",
-            stats['total_files'],
-            delta=f"{stats['passed_files']} passed"
-        )
-
-    with col3:
-        success_rate = (stats['passed_files'] / stats['total_files'] * 100) if stats['total_files'] > 0 else 0
-        st.metric(
-            "Success Rate",
-            f"{success_rate:.1f}%",
-            delta=f"{stats['failed_files']} failed"
-        )
-
-    with col4:
-        court_display = selected_court_filter if selected_court_filter else "Court"
-        st.metric(
-            f"Total {court_display} Lines",
-            f"{stats['total_kem_lines']:,}",
-            delta=f"{stats['total_valid_lines']:,} valid"
-        )
-    
-    # Recent Processing History
-    st.markdown("### 📝 Recent Processing History")
-    if MULTI_COURT_SUPPORT and selected_court_filter:
-        history = db.get_history(20, selected_court_filter)
-    else:
-        history = db.get_history(20)
-    
-    if not history.empty:
-        # Format for display
-        display_df = history[['file_name', 'processed_at', 'validation_status', 'kem_lines', 'success_rate']].copy()
-        display_df['status'] = display_df['validation_status'].apply(
-            lambda x: '✅' if x == 'passed' else '❌'
-        )
-        
-        st.dataframe(
-            display_df,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "file_name": "File",
-                "processed_at": st.column_config.DatetimeColumn("Processed", format="DD/MM HH:mm"),
-                "status": "Status",
-                "kem_lines": st.column_config.NumberColumn("KEM Lines", format="%d"),
-                "success_rate": st.column_config.NumberColumn("Success %", format="%.1f%%")
-            }
-        )
-    else:
-        st.info("No processing history yet. Process some files to see results here.")
-    
-    # Quick Actions
-    st.markdown("### ⚡ Quick Actions")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("🔄 Process Batch", type="primary", disabled=not st.session_state.connected):
-            process_batch()
-    
-    with col2:
-        if st.button("📊 Refresh Stats"):
-            st.rerun()
-    
-    with col3:
-        if st.button("🧪 Test Connection"):
-            test_connection()
 
 def show_ftp_files():
-    """FTP Files browser"""
-    st.header("📁 FTP File Browser")
-
+    st.header("FTP Files")
     if not st.session_state.connected:
-        st.warning("Please connect to FTP server first")
-        if st.button("Connect Now"):
-            connect_to_ftp()
+        st.warning("Connect first")
         return
-
-    # Court-based filtering (add this functionality here)
-    if MULTI_COURT_SUPPORT and len(st.session_state.available_courts) > 1:
-        court_options = {"All Courts": None}
-        for court_code in st.session_state.available_courts:
-            court_info = st.session_state.court_manager.get_court(court_code)
-            if court_info:
-                court_options[f"{court_info.name} ({court_code})"] = court_code
-
-        selected_filter_court = st.selectbox(
-            "Filter files by Court",
-            options=list(court_options.keys()),
-            index=0,
-            help="Filter files based on court-specific FTP paths",
-            key="ftp_browser_court_filter"
-        )
-        filter_court = court_options[selected_filter_court]
-        st.markdown("---")
+    cfg = st.session_state.ftp_processor.ftp_config
+    court = st.session_state.selected_court
+    paths = cfg.get_court_paths(court) or {
+        'inbox': cfg.ftp_inbox,
+        'results': cfg.ftp_results,
+        'processed': cfg.ftp_processed,
+        'invalid': cfg.ftp_invalid,
+    }
+    dir_label = st.selectbox("Directory", ["inbox", "results", "processed", "invalid"])
+    ftp_path = paths[dir_label]
+    st.caption(ftp_path)
+    files = st.session_state.ftp_processor.list_ftp_files(ftp_path)
+    if files:
+        df = pd.DataFrame({"Filename": files, "Select": [False]*len(files)})
+        edited = st.data_editor(df, hide_index=True, use_container_width=True, disabled=["Filename"])
+        selected = edited[edited["Select"]]["Filename"].tolist() if not edited.empty else []
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("Process Selected", disabled=not selected):
+                process_selected_files(selected, ftp_path)
+        with c2:
+            if st.button("Download Selected", disabled=not selected):
+                download_selected_files(selected, ftp_path)
     else:
-        filter_court = None
+        st.info("No files found")
 
-    # Get court-specific directories or default directories
-    if MULTI_COURT_SUPPORT and hasattr(st.session_state.ftp_processor.ftp_config, 'court_paths'):
-        if filter_court and filter_court in st.session_state.ftp_processor.ftp_config.court_paths:
-            court_paths = st.session_state.ftp_processor.ftp_config.court_paths[filter_court]
-            directories = {
-                f"Inbox ({filter_court})": court_paths.get("inbox", ""),
-                f"Results ({filter_court})": court_paths.get("results", ""),
-                f"Processed ({filter_court})": court_paths.get("processed", ""),
-                f"Invalid ({filter_court})": court_paths.get("invalid", "")
-            }
-            # Show court-specific FTP paths
-            st.markdown(f"### 🏛️ {filter_court} Court FTP Paths")
-            for path_type, path in court_paths.items():
-                if path:
-                    st.code(f"{path_type.title()}: {path}")
-            st.markdown("---")
-        elif filter_court is None:
-            # Show all court paths
-            directories = {}
-            st.markdown("### 🏛️ All Court FTP Paths")
-            for court_code in st.session_state.available_courts:
-                if court_code in st.session_state.ftp_processor.ftp_config.court_paths:
-                    court_paths = st.session_state.ftp_processor.ftp_config.court_paths[court_code]
-                    st.markdown(f"**{court_code} Court:**")
-                    for path_type, path in court_paths.items():
-                        if path:
-                            st.code(f"{path_type.title()}: {path}")
-                            directories[f"{path_type.title()} ({court_code})"] = path
-            st.markdown("---")
-        else:
-            st.warning(f"No FTP paths configured for court: {filter_court}")
-            return
-    else:
-        # Fallback to legacy single-court directories
-        directories = {
-            "Inbox": st.session_state.ftp_processor.ftp_config.ftp_inbox,
-            "Results": st.session_state.ftp_processor.ftp_config.ftp_results,
-            "Processed": st.session_state.ftp_processor.ftp_config.ftp_processed,
-            "Invalid": st.session_state.ftp_processor.ftp_config.ftp_invalid
-        }
-    
-    selected_dir = st.selectbox("Select Directory", list(directories.keys()))
-    ftp_path = directories[selected_dir]
-    
-    # List files
-    with st.spinner(f"Loading files from {selected_dir}..."):
-        try:
-            files = st.session_state.ftp_processor.list_ftp_files(ftp_path)
-            
-            if files:
-                st.success(f"Found {len(files)} files in {selected_dir}")
-                
-                # Create DataFrame for display
-                file_data = []
-                for file in files:
-                    file_data.append({
-                        "📄 Filename": file,
-                        "📁 Directory": selected_dir,
-                        "Select": False
-                    })
-                
-                df = pd.DataFrame(file_data)
-                
-                # Display with selection
-                edited_df = st.data_editor(
-                    df,
-                    use_container_width=True,
-                    hide_index=True,
-                    disabled=["📄 Filename", "📁 Directory"]
-                )
-                
-                # Process selected files
-                selected_files = edited_df[edited_df["Select"]]["📄 Filename"].tolist()
-                
-                if selected_files:
-                    st.info(f"Selected {len(selected_files)} files")
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        if st.button("🚀 Process Selected", type="primary"):
-                            process_selected_files(selected_files, ftp_path)
-                    
-                    with col2:
-                        if st.button("📥 Download Selected"):
-                            download_selected_files(selected_files, ftp_path)
-            else:
-                st.warning(f"No files found in {selected_dir}")
-                
-        except Exception as e:
-            st.error(f"Error listing files: {e}")
 
 def show_process_files():
-    """Process files page"""
-    st.header("⚡ Process Files")
-    
+    st.header("Process Files")
     if not st.session_state.connected:
-        st.warning("Please connect to FTP server first")
+        st.warning("Connect first")
         return
-    
-    tab1, tab2, tab3 = st.tabs(["Single File", "Batch Process", "Continuous Processing"])
-    
-    with tab1:
-        st.markdown("### Process Single File")
-        
-        # List files in inbox
-        files = st.session_state.ftp_processor.list_ftp_files(
-            st.session_state.ftp_processor.ftp_config.ftp_inbox
-        )
-        
-        if files:
-            selected_file = st.selectbox("Select file to process", files)
-            
-            if st.button("🔄 Process File", type="primary"):
-                with st.spinner(f"Processing {selected_file}..."):
-                    result = st.session_state.ftp_processor.process_ftp_file(
-                        selected_file,
-                        court_code=st.session_state.selected_court
-                    )
-                    
-                    if result['status'] == 'success':
-                        st.success(f"✅ Successfully processed: {selected_file}")
-                        
-                        # Show results
-                        col1, col2, col3 = st.columns(3)
-                        with col1:
-                            st.metric("Validation Status", result['validation_status'].upper())
-                        with col2:
-                            st.metric("KEM Lines", result['stats']['kem_lines'])
-                        with col3:
-                            st.metric("Success Rate", f"{result['stats']['success_rate']:.1f}%")
-                        
-                        # Show CSV path
-                        if 'ftp_csv_path' in result:
-                            st.info(f"CSV uploaded to: {result['ftp_csv_path']}")
-                    else:
-                        st.error(f"❌ Failed to process: {result.get('reason', 'Unknown error')}")
-        else:
-            st.warning("No files in inbox to process")
-    
-    with tab2:
-        st.markdown("### Batch Processing")
-        
-        batch_size = st.number_input("Batch Size", min_value=1, max_value=100, value=10)
-        
-        if st.button("🚀 Process Batch", type="primary"):
-            process_batch(batch_size)
-    
-    with tab3:
-        st.markdown("### Continuous Processing")
-        
-        interval = st.number_input("Process Interval (minutes)", min_value=1, max_value=60, value=5)
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("▶️ Start Continuous", type="primary", disabled=st.session_state.processing):
-                st.session_state.processing = True
-                st.info(f"Continuous processing started (every {interval} minutes)")
-                st.warning("Note: This runs in background. Use CLI version for true continuous processing.")
-        
-        with col2:
-            if st.button("⏹️ Stop Continuous", disabled=not st.session_state.processing):
-                st.session_state.processing = False
-                st.info("Continuous processing stopped")
+    files = st.session_state.ftp_processor.list_ftp_files(st.session_state.ftp_processor.ftp_config.ftp_inbox)
+    if files:
+        f = st.selectbox("Select file", files)
+        if st.button("Process File"):
+            with st.spinner("Processing..."):
+                res = st.session_state.ftp_processor.process_ftp_file(f, court_code=st.session_state.selected_court)
+            if res['status'] == 'success':
+                st.success("Processed")
+                st.json({k: v for k, v in res.items() if k in ('validation_status', 'stats', 'ftp_csv_path')})
+            else:
+                st.error(res.get('reason', 'Failed'))
+    bs = st.number_input("Batch Size", min_value=1, max_value=100, value=10)
+    if st.button("Process Batch"):
+        process_batch(bs)
+
 
 def show_analytics():
-    """Analytics page"""
-    st.header("📈 Processing Analytics")
-    
+    st.header("Analytics & Archives")
+
+    # High-level processing metrics + charts
     db = DatabaseManager(st.session_state.ftp_processor.kem_config.db_path)
     history = db.get_history(1000)
-    
     if history.empty:
-        st.warning("No data available for analytics")
-        return
-    
-    # Date filter
-    col1, col2 = st.columns(2)
-    history['date'] = pd.to_datetime(history['processed_at']).dt.date
-    
-    with col1:
-        start_date = st.date_input("Start Date", history['date'].min())
-    with col2:
-        end_date = st.date_input("End Date", history['date'].max())
-    
-    # Filter data
-    mask = (history['date'] >= start_date) & (history['date'] <= end_date)
-    filtered = history.loc[mask]
-    
-    # Metrics
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Total Files", len(filtered))
-    with col2:
-        passed = sum(filtered['validation_status'] == 'passed')
-        st.metric("Passed", passed)
-    with col3:
-        failed = sum(filtered['validation_status'] == 'failed')
-        st.metric("Failed", failed)
-    with col4:
-        avg_rate = filtered['success_rate'].mean()
-        st.metric("Avg Success Rate", f"{avg_rate:.1f}%")
-    
-    # Charts
-    import plotly.express as px
-    import plotly.graph_objects as go
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Pie chart
-        fig = go.Figure(data=[go.Pie(
-            labels=['Passed', 'Failed'],
-            values=[passed, failed],
-            hole=0.3,
-            marker_colors=['#28a745', '#dc3545']
-        )])
-        fig.update_layout(title="Validation Status Distribution", height=400)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        # Time series
-        daily = filtered.groupby('date').agg({
-            'validation_status': lambda x: (x == 'passed').sum()
-        }).reset_index()
-        daily.columns = ['date', 'passed_count']
-        
-        fig = px.line(daily, x='date', y='passed_count', title="Daily Processing Trend")
-        fig.update_layout(height=400)
-        st.plotly_chart(fig, use_container_width=True)
+        st.info("No data available yet. Process some files to populate analytics.")
+    else:
+        # Date/time preparation
+        history['processed_at_dt'] = pd.to_datetime(history['processed_at'])
+        history['date'] = history['processed_at_dt'].dt.date
+
+        # Quick time window (relative to now)
+        time_window = st.selectbox(
+            "Quick Time Window",
+            [
+                "All",
+                "Last 1 hour",
+                "Last 6 hours",
+                "Last 12 hours",
+                "Last 24 hours",
+                "Last 7 days",
+            ],
+            index=0,
+            help="Apply a relative time window filter based on current time",
+        )
+
+        filtered = history
+        if time_window != "All":
+            import datetime as _dt
+            now = _dt.datetime.now()
+            delta = {
+                "Last 1 hour": _dt.timedelta(hours=1),
+                "Last 6 hours": _dt.timedelta(hours=6),
+                "Last 12 hours": _dt.timedelta(hours=12),
+                "Last 24 hours": _dt.timedelta(hours=24),
+                "Last 7 days": _dt.timedelta(days=7),
+            }[time_window]
+            cutoff = now - delta
+            filtered = filtered[filtered['processed_at_dt'] >= cutoff]
+        else:
+            # Date + optional time-of-day filters
+            col1, col2 = st.columns(2)
+            with col1:
+                start_date = st.date_input("Start Date", history['date'].min())
+            with col2:
+                end_date = st.date_input("End Date", history['date'].max())
+            mask = (history['date'] >= start_date) & (history['date'] <= end_date)
+            filtered = history.loc[mask]
+
+            # Optional time-of-day filter
+            use_time = st.checkbox("Filter by time of day", value=False, help="Further restrict results to a time-of-day range")
+            if use_time:
+                import datetime as _dt
+                t1 = st.time_input("Start Time", value=_dt.time(0, 0))
+                t2 = st.time_input("End Time", value=_dt.time(23, 59))
+                times = filtered['processed_at_dt'].dt.time
+                if t1 <= t2:
+                    filtered = filtered[(times >= t1) & (times <= t2)]
+                else:
+                    # Cross-midnight window
+                    filtered = filtered[(times >= t1) | (times <= t2)]
+
+        # Metrics
+        colm1, colm2, colm3, colm4 = st.columns(4)
+        with colm1:
+            st.metric("Total Files", len(filtered))
+        with colm2:
+            passed = int((filtered['validation_status'] == 'passed').sum())
+            st.metric("Passed", passed)
+        with colm3:
+            failed = int((filtered['validation_status'] == 'failed').sum())
+            st.metric("Failed", failed)
+        with colm4:
+            avg_rate = float(filtered['success_rate'].mean()) if not filtered.empty else 0.0
+            st.metric("Avg Success Rate", f"{avg_rate:.1f}%")
+
+        # Charts (best-effort if plotly available)
+        try:
+            import plotly.express as px
+            import plotly.graph_objects as go
+
+            colc1, colc2 = st.columns(2)
+            with colc1:
+                fig = go.Figure(data=[go.Pie(labels=['Passed', 'Failed'], values=[passed, failed], hole=0.3,
+                                             marker_colors=['#28a745', '#dc3545'])])
+                fig.update_layout(title="Validation Status Distribution", height=380)
+                st.plotly_chart(fig, use_container_width=True)
+            with colc2:
+                daily = filtered.groupby('date').agg({'validation_status': lambda x: (x == 'passed').sum()}).reset_index()
+                daily.columns = ['date', 'passed_count']
+                fig = px.line(daily, x='date', y='passed_count', title="Daily Passed Count")
+                fig.update_layout(height=380)
+                st.plotly_chart(fig, use_container_width=True)
+        except Exception:
+            st.caption("Charts unavailable (plotly not installed)")
+
+    st.markdown("---")
+    st.subheader("Archive Management")
+
+    # Archive tools
+    sel_court = None
+    if MULTI_COURT_SUPPORT and 'available_courts' in st.session_state:
+        opts = {"All Courts": None}
+        for code in st.session_state.available_courts:
+            opts[code] = code
+        label = st.selectbox("Select court for archive actions", list(opts.keys()), index=0)
+        sel_court = opts[label]
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("Migrate Legacy Archives"):
+            with st.spinner("Migrating legacy archives..."):
+                res = st.session_state.ftp_processor.file_processor.migrate_legacy_archives_to_court_structure()
+            st.success("Migration completed")
+            st.json(res)
+    with c2:
+        if st.button("Cleanup Expired (Dry Run)"):
+            with st.spinner("Scanning expired archives..."):
+                res = st.session_state.ftp_processor.file_processor.cleanup_expired_archives(sel_court, dry_run=True)
+            st.info("Dry run completed")
+            st.json(res)
+    with c3:
+        if st.button("Cleanup Expired (Apply)"):
+            with st.spinner("Deleting expired archives..."):
+                res = st.session_state.ftp_processor.file_processor.cleanup_expired_archives(sel_court, dry_run=False)
+            st.success("Cleanup completed")
+            st.json(res)
+
+    st.subheader("Archive Statistics")
+    stats = st.session_state.ftp_processor.file_processor.get_archive_statistics(sel_court)
+
+    def _render_single_court_stats(s: dict):
+        dbs = s.get('database_tracking', {})
+        dir_analysis = s.get('directory_analysis', {})
+        monthly = dir_analysis.get('monthly_breakdown', {})
+        cc1, cc2, cc3, cc4 = st.columns(4)
+        with cc1:
+            st.metric("Total Files", dbs.get('total_files', 0))
+        with cc2:
+            st.metric("Processed Files", dbs.get('processed_files', 0))
+        with cc3:
+            st.metric("Invalid Files", dbs.get('invalid_files', 0))
+        with cc4:
+            st.metric("Expired Files", dbs.get('expired_files', 0))
+
+        st.markdown("#### Directory Summary")
+        rows = []
+        for key in ['processed_dir', 'invalid_dir']:
+            if key in dir_analysis:
+                row = dir_analysis[key]
+                rows.append({'Directory': 'Processed' if key == 'processed_dir' else 'Invalid',
+                             'Files': row.get('files', 0), 'Size (MB)': round(row.get('size_mb', 0), 2)})
+        if rows:
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+        if monthly:
+            st.markdown("#### Monthly Breakdown")
+            month_rows = [{'Month': m, 'Files': r.get('files', 0), 'Size (MB)': round(r.get('size_mb', 0), 2)} for m, r in monthly.items()]
+            st.dataframe(pd.DataFrame(month_rows).sort_values('Month'), use_container_width=True, hide_index=True)
+
+    if isinstance(stats, dict) and 'database_tracking' in stats:
+        _render_single_court_stats(stats)
+    elif isinstance(stats, dict):
+        rows = []
+        for court_code, s in stats.items():
+            dbs = s.get('database_tracking', {})
+            rows.append({'Court': court_code,
+                        'Total Files': dbs.get('total_files', 0),
+                        'Processed': dbs.get('processed_files', 0),
+                        'Invalid': dbs.get('invalid_files', 0),
+                        'Expired': dbs.get('expired_files', 0),
+                        'Total Size (MB)': dbs.get('total_size_mb', 0),
+                        'Oldest': dbs.get('oldest_file', ''),
+                        'Newest': dbs.get('newest_file', ''),
+                        })
+        if rows:
+            st.dataframe(pd.DataFrame(rows).sort_values('Court'), use_container_width=True, hide_index=True)
+        else:
+            st.info("No archive statistics available.")
+
 
 def show_ftp_settings():
-    """FTP Settings page"""
-    st.header("⚙️ FTP Configuration")
-    
-    config = st.session_state.ftp_processor.ftp_config
-    
-    # Server settings
-    st.markdown("### 🖥️ Server Settings")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        server = st.text_input("FTP Server", config.ftp_server)
-        username = st.text_input("Username", config.ftp_username)
-    
-    with col2:
-        port = st.number_input("Port", value=config.ftp_port)
-        password = st.text_input("Password", config.ftp_password, type="password")
-    
-    # Directory settings
-    st.markdown("### 📁 Directory Settings")
-    
-    base_path = st.text_input("Base Path", config.ftp_base_path)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        inbox = st.text_input("Inbox Directory", config.ftp_inbox)
-        results = st.text_input("Results Directory", config.ftp_results)
-    
-    with col2:
-        processed = st.text_input("Processed Archive", config.ftp_processed)
-        invalid = st.text_input("Invalid Archive", config.ftp_invalid)
-    
-    # Processing settings
-    st.markdown("### ⚡ Processing Settings")
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        batch_size = st.number_input("Batch Size", value=config.batch_size)
-    with col2:
-        interval = st.number_input("Process Interval (min)", value=config.process_interval_minutes)
-    with col3:
-        local_temp = st.text_input("Local Temp Dir", config.local_temp_dir)
-    
-    # Options
-    st.markdown("### 🔧 Options")
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        upload_results = st.checkbox("Upload Results", config.upload_results)
-    with col2:
-        archive_on_ftp = st.checkbox("Archive on FTP", config.archive_on_ftp)
-    with col3:
-        delete_after = st.checkbox("Delete After Download", config.delete_after_download)
-    
-    # Save button
-    if st.button("💾 Save Configuration", type="primary"):
-        # Update config
-        new_config = {
+    st.header("FTP Settings")
+    cfg: FTPConfig = st.session_state.ftp_processor.ftp_config
+    c1, c2 = st.columns(2)
+    with c1:
+        server = st.text_input("Server", cfg.ftp_server)
+        user = st.text_input("Username", cfg.ftp_username)
+        inbox = st.text_input("Inbox", cfg.ftp_inbox)
+        processed = st.text_input("Processed", cfg.ftp_processed)
+    with c2:
+        port = st.number_input("Port", value=int(cfg.ftp_port))
+        pw = st.text_input("Password", cfg.ftp_password, type="password")
+        results = st.text_input("Results", cfg.ftp_results)
+        invalid = st.text_input("Invalid", cfg.ftp_invalid)
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        batch = st.number_input("Batch Size", value=int(cfg.batch_size))
+        upload_results = st.checkbox("Upload Results", cfg.upload_results)
+    with c2:
+        interval = st.number_input("Interval (min)", value=int(cfg.process_interval_minutes))
+        archive_on_ftp = st.checkbox("Archive on FTP", cfg.archive_on_ftp)
+    with c3:
+        tempdir = st.text_input("Local Temp Dir", cfg.local_temp_dir)
+        delete_after = st.checkbox("Delete After Download", cfg.delete_after_download)
+    if st.button("Save"):
+        data = {
             "ftp_server": server,
-            "ftp_port": port,
-            "ftp_username": username,
-            "ftp_password": password,
-            "ftp_base_path": base_path,
+            "ftp_port": int(port),
+            "ftp_username": user,
+            "ftp_password": pw,
             "ftp_inbox": inbox,
             "ftp_results": results,
             "ftp_processed": processed,
             "ftp_invalid": invalid,
-            "batch_size": batch_size,
-            "process_interval_minutes": interval,
-            "local_temp_dir": local_temp,
+            "batch_size": int(batch),
+            "process_interval_minutes": int(interval),
+            "local_temp_dir": tempdir,
             "upload_results": upload_results,
             "archive_on_ftp": archive_on_ftp,
-            "delete_after_download": delete_after
+            "delete_after_download": delete_after,
         }
-        
-        # Save to file
         with open("ftp_config.json", "w") as f:
-            json.dump(new_config, f, indent=2)
-        
-        st.success("Configuration saved! Restart the application to apply changes.")
+            json.dump(data, f, indent=2)
+        st.success("Saved")
+    # Test connection control mirrored here
+    if st.button("Test Connection"):
+        with st.spinner("Testing FTP connection..."):
+            ok = st.session_state.ftp_processor.test_connection()
+        if ok:
+            st.success("FTP connection test successful")
+        else:
+            st.error("FTP connection test failed")
+    st.markdown("---")
+    st.subheader("Archive Tools")
+    sel = None
+    if MULTI_COURT_SUPPORT and 'available_courts' in st.session_state:
+        opts = {"All Courts": None}
+        for code in st.session_state.available_courts:
+            opts[code] = code
+        label = st.selectbox("Cleanup court", list(opts.keys()), key="settings_cleanup_court")
+        sel = opts[label]
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("Migrate Archives", key="settings_migrate"):
+            st.json(st.session_state.ftp_processor.file_processor.migrate_legacy_archives_to_court_structure())
+    with c2:
+        if st.button("Cleanup (Dry Run)", key="settings_cleanup_dry"):
+            st.json(st.session_state.ftp_processor.file_processor.cleanup_expired_archives(sel, True))
+    with c3:
+        if st.button("Cleanup (Apply)", key="settings_cleanup_apply"):
+            st.json(st.session_state.ftp_processor.file_processor.cleanup_expired_archives(sel, False))
+
 
 def show_help():
-    """Help page"""
-    st.header("📚 Help & Documentation")
-    
-    st.markdown("""
-    ## 🌐 FTP Integration Guide
-    
-    ### Quick Start
-    1. **Connect**: Click "Connect" in the sidebar to establish FTP connection
-    2. **Browse**: Go to "FTP Files" to see available files
-    3. **Process**: Use "Process Files" to validate KEM data
-    4. **Results**: CSV reports are uploaded back to FTP
-    
-    ### FTP Directory Structure
-    ```
-    /PAMarchive/SeaTac/
-    ├── kem-inbox/          # Place files here for processing
-    ├── kem-results/        # CSV validation reports
-    ├── processed-archive/  # Successfully validated files
-    └── invalid-archive/    # Failed validation files
-    ```
-    
-    ### Processing Workflow
-    1. Files are downloaded from `kem-inbox`
-    2. KEM validation is performed locally
-    3. CSV results are uploaded to `kem-results`
-    4. Original files are moved to archive folders
-    
-    ### Validation Rules
-    - **Valid KEM**: 9-13 digits in the ID
-    - **Invalid KEM**: <9 or >13 digits
-    - Files with any invalid KEM line are marked as failed
-    
-    ### Troubleshooting
-    
-    **Connection Failed**
-    - Check server address and port
-    - Verify username and password
-    - Ensure network connectivity
-    
-    **No Files Found**
-    - Check directory paths in settings
-    - Verify FTP permissions
-    - Ensure files are in the correct format
-    
-    **Processing Errors**
-    - Check file encoding (UTF-8 preferred)
-    - Verify file format (TXT, PDF, CSV)
-    - Review error logs for details
-    """)
+    st.header("Help")
+    st.markdown("Connect, browse, and process files. Use Analytics/Settings for archive tools.")
 
-# Helper functions
+
 def process_batch(batch_size=None):
-    """Process a batch of files"""
-    with st.spinner("Processing batch..."):
-        results = st.session_state.ftp_processor.process_batch(batch_size)
+    res = st.session_state.ftp_processor.process_batch(batch_size)
+    if res:
+        st.success(f"Processed {len(res)} files")
+        for r in res:
+            icon = '✔' if r['status'] == 'success' else '✖'
+            st.write(f"{icon} {r.get('filename','?')}: {r.get('validation_status', r.get('reason','N/A'))}")
+    else:
+        st.info("No files")
 
-        if results:
-            success = sum(1 for r in results if r['status'] == 'success')
-            st.success(f"Processed {len(results)} files: {success} succeeded")
-
-            # Court breakdown analysis
-            if MULTI_COURT_SUPPORT:
-                court_breakdown = {}
-                for r in results:
-                    court_code = r.get('court_code', 'Unknown')
-                    if court_code not in court_breakdown:
-                        court_breakdown[court_code] = {'success': 0, 'failed': 0, 'files': []}
-
-                    if r['status'] == 'success':
-                        court_breakdown[court_code]['success'] += 1
-                    else:
-                        court_breakdown[court_code]['failed'] += 1
-                    court_breakdown[court_code]['files'].append(r)
-
-                if len(court_breakdown) > 1:
-                    st.markdown("### 🏛️ Court Breakdown")
-                    for court_code, stats in court_breakdown.items():
-                        court_info = st.session_state.court_manager.get_court(court_code) if court_code != 'Unknown' else None
-                        court_name = court_info.name if court_info else court_code
-
-                        total = stats['success'] + stats['failed']
-                        success_rate = (stats['success'] / total * 100) if total > 0 else 0
-
-                        col1, col2, col3 = st.columns(3)
-                        with col1:
-                            st.metric(f"{court_name} ({court_code})", f"{total} files")
-                        with col2:
-                            st.metric("Success Rate", f"{success_rate:.1f}%")
-                        with col3:
-                            st.metric("Passed/Failed", f"{stats['success']}/{stats['failed']}")
-
-                        # Show files for this court
-                        with st.expander(f"📁 {court_name} Files"):
-                            for r in stats['files']:
-                                if r['status'] == 'success':
-                                    st.write(f"✅ {r['filename']}: {r['validation_status']}")
-                                else:
-                                    st.write(f"❌ {r['filename']}: {r.get('reason', 'Failed')}")
-                else:
-                    # Single court or unknown court processing
-                    st.markdown("### 📋 Processing Results")
-                    for r in results:
-                        if r['status'] == 'success':
-                            st.write(f"✅ {r['filename']}: {r['validation_status']}")
-                        else:
-                            st.write(f"❌ {r['filename']}: {r.get('reason', 'Failed')}")
-            else:
-                # Legacy mode - show simple results
-                st.markdown("### 📋 Processing Results")
-                for r in results:
-                    if r['status'] == 'success':
-                        st.write(f"✅ {r['filename']}: {r['validation_status']}")
-                    else:
-                        st.write(f"❌ {r['filename']}: {r.get('reason', 'Failed')}")
-        else:
-            st.warning("No files to process")
-
-def test_connection():
-    """Test FTP connection"""
-    with st.spinner("Testing connection..."):
-        if st.session_state.ftp_processor.test_connection():
-            st.success("✅ FTP connection test successful!")
-        else:
-            st.error("❌ FTP connection test failed")
 
 def process_selected_files(files, directory):
-    """Process selected files"""
-    results = []
-    for file in files:
-        with st.spinner(f"Processing {file}..."):
-            try:
-                result = st.session_state.ftp_processor.process_ftp_file(
-                    file,
-                    court_code=st.session_state.selected_court,
-                    source_path=directory
-                )
-                results.append(result)
+    for f in files:
+        with st.spinner(f"Processing {f}..."):
+            r = st.session_state.ftp_processor.process_ftp_file(f, court_code=st.session_state.selected_court, source_path=directory)
+        icon = '✔' if r['status'] == 'success' else '✖'
+        st.write(f"{icon} {f}: {r.get('validation_status', r.get('reason','N/A'))}")
 
-                if result['status'] == 'success':
-                    st.success(f"✅ {file}: {result['validation_status']}")
-                else:
-                    st.error(f"❌ {file}: {result.get('reason', 'Failed')}")
-            except Exception as e:
-                st.error(f"❌ {file}: Error - {str(e)}")
-
-    # Show summary
-    if results:
-        success_count = sum(1 for r in results if r['status'] == 'success')
-        st.info(f"Processed {len(results)} files: {success_count} succeeded, {len(results) - success_count} failed")
 
 def download_selected_files(files, directory):
-    """Download selected files"""
-    for file in files:
-        st.info(f"Downloading {file} from {directory}")
+    for f in files:
+        st.info(f"Downloading {f} from {directory}")
+
+
+# Override helpers with cleaned icons display
+def process_batch(batch_size=None):
+    results = st.session_state.ftp_processor.process_batch(batch_size)
+    if results:
+        st.success(f"Processed {len(results)} files")
+        for r in results:
+            icon = '✔' if r['status'] == 'success' else '✖'
+            st.write(f"{icon} {r.get('filename','?')}: {r.get('validation_status', r.get('reason','N/A'))}")
+    else:
+        st.info("No files")
+
+
+def process_selected_files(files, directory):
+    for f in files:
+        with st.spinner(f"Processing {f}..."):
+            r = st.session_state.ftp_processor.process_ftp_file(
+                f,
+                court_code=st.session_state.selected_court,
+                source_path=directory,
+            )
+        icon = '✔' if r['status'] == 'success' else '✖'
+        st.write(f"{icon} {f}: {r.get('validation_status', r.get('reason','N/A'))}")
+
 
 if __name__ == "__main__":
     main()
