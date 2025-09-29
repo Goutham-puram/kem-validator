@@ -25,22 +25,16 @@
         "base_path": "/PAMarchive/SeaTac/",
         "inbox_path": "/PAMarchive/SeaTac/kem-inbox/",
         "results_path": "/PAMarchive/SeaTac/kem-results/",
-        "processed_path": "/PAMarchive/SeaTac/processed-archive/",
-        "invalid_path": "/PAMarchive/SeaTac/invalid-archive/"
+        "processed_path": "/PAMarchive/SeaTac/kem-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/kem-invalid/"
       },
-      "database": {
-        "table_suffix": "kem",
-        "retention_days": 365
-      },
-      "file_naming": {
-        "csv_prefix": "kem_validation",
-        "archive_prefix": "kem_archive"
-      }
+      "database": { "table_suffix": "kem", "retention_days": 365 },
+      "file_naming": { "csv_prefix": "kem_validation", "archive_prefix": "kem_archive" }
     },
     "SEA": {
       "name": "Seattle Court",
       "full_name": "Seattle Municipal Court Document System",
-      "enabled": false,
+      "enabled": true,
       "validation_rules": {
         "min_digits": 8,
         "max_digits": 12,
@@ -56,29 +50,23 @@
         "invalid_dir": "sea-invalid-archive"
       },
       "ftp_config": {
-        "enabled": false,
-        "base_path": "/PAMarchive/Seattle/",
-        "inbox_path": "/PAMarchive/Seattle/sea-inbox/",
-        "results_path": "/PAMarchive/Seattle/sea-results/",
-        "processed_path": "/PAMarchive/Seattle/sea-processed-archive/",
-        "invalid_path": "/PAMarchive/Seattle/sea-invalid-archive/"
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/sea-inbox/",
+        "results_path": "/PAMarchive/SeaTac/sea-results/",
+        "processed_path": "/PAMarchive/SeaTac/sea-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/sea-invalid/"
       },
-      "database": {
-        "table_suffix": "sea",
-        "retention_days": 180
-      },
-      "file_naming": {
-        "csv_prefix": "sea_validation",
-        "archive_prefix": "sea_archive"
-      }
+      "database": { "table_suffix": "sea", "retention_days": 180 },
+      "file_naming": { "csv_prefix": "sea_validation", "archive_prefix": "sea_archive" }
     },
     "TAC": {
       "name": "Tacoma Court",
       "full_name": "Tacoma District Court Records",
-      "enabled": false,
+      "enabled": true,
       "validation_rules": {
         "min_digits": 10,
-        "max_digits": 15,
+        "max_digits": 14,
         "prefix_required": true,
         "prefix": "TAC",
         "allow_alphanumeric": false,
@@ -91,21 +79,102 @@
         "invalid_dir": "tac-invalid-archive"
       },
       "ftp_config": {
-        "enabled": false,
-        "base_path": "/PAMarchive/Tacoma/",
-        "inbox_path": "/PAMarchive/Tacoma/tac-inbox/",
-        "results_path": "/PAMarchive/Tacoma/tac-results/",
-        "processed_path": "/PAMarchive/Tacoma/tac-processed-archive/",
-        "invalid_path": "/PAMarchive/Tacoma/tac-invalid-archive/"
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/tac-inbox/",
+        "results_path": "/PAMarchive/SeaTac/tac-results/",
+        "processed_path": "/PAMarchive/SeaTac/tac-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/tac-invalid/"
       },
-      "database": {
-        "table_suffix": "tac",
-        "retention_days": 270
+      "database": { "table_suffix": "tac", "retention_days": 270 },
+      "file_naming": { "csv_prefix": "tac_validation", "archive_prefix": "tac_archive" }
+    },
+    "ISQ": {
+      "name": "Issaquah Court",
+      "full_name": "Issaquah Municipal Court",
+      "enabled": true,
+      "validation_rules": {
+        "min_digits": 9,
+        "max_digits": 12,
+        "prefix_required": true,
+        "prefix": "ISQ",
+        "allow_alphanumeric": true,
+        "case_sensitive": false
       },
-      "file_naming": {
-        "csv_prefix": "tac_validation",
-        "archive_prefix": "tac_archive"
-      }
+      "directories": {
+        "input_dir": "isq-inbox",
+        "output_dir": "isq-results",
+        "processed_dir": "isq-processed-archive",
+        "invalid_dir": "isq-invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/isq-inbox/",
+        "results_path": "/PAMarchive/SeaTac/isq-results/",
+        "processed_path": "/PAMarchive/SeaTac/isq-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/isq-invalid/"
+      },
+      "database": { "table_suffix": "isq", "retention_days": 180 },
+      "file_naming": { "csv_prefix": "isq_validation", "archive_prefix": "isq_archive" }
+    },
+    "PUL": {
+      "name": "Puyallup Court",
+      "full_name": "Puyallup Municipal Court",
+      "enabled": true,
+      "validation_rules": {
+        "min_digits": 8,
+        "max_digits": 11,
+        "prefix_required": true,
+        "prefix": "PUL",
+        "allow_alphanumeric": true,
+        "case_sensitive": false
+      },
+      "directories": {
+        "input_dir": "pul-inbox",
+        "output_dir": "pul-results",
+        "processed_dir": "pul-processed-archive",
+        "invalid_dir": "pul-invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/pul-inbox/",
+        "results_path": "/PAMarchive/SeaTac/pul-results/",
+        "processed_path": "/PAMarchive/SeaTac/pul-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/pul-invalid/"
+      },
+      "database": { "table_suffix": "pul", "retention_days": 180 },
+      "file_naming": { "csv_prefix": "pul_validation", "archive_prefix": "pul_archive" }
+    },
+    "TUK": {
+      "name": "Tukwila Court",
+      "full_name": "Tukwila Municipal Court",
+      "enabled": true,
+      "validation_rules": {
+        "min_digits": 9,
+        "max_digits": 13,
+        "prefix_required": true,
+        "prefix": "TUK",
+        "allow_alphanumeric": true,
+        "case_sensitive": false
+      },
+      "directories": {
+        "input_dir": "tuk-inbox",
+        "output_dir": "tuk-results",
+        "processed_dir": "tuk-processed-archive",
+        "invalid_dir": "tuk-invalid-archive"
+      },
+      "ftp_config": {
+        "enabled": true,
+        "base_path": "/PAMarchive/SeaTac/",
+        "inbox_path": "/PAMarchive/SeaTac/tuk-inbox/",
+        "results_path": "/PAMarchive/SeaTac/tuk-results/",
+        "processed_path": "/PAMarchive/SeaTac/tuk-processed/",
+        "invalid_path": "/PAMarchive/SeaTac/tuk-invalid/"
+      },
+      "database": { "table_suffix": "tuk", "retention_days": 180 },
+      "file_naming": { "csv_prefix": "tuk_validation", "archive_prefix": "tuk_archive" }
     }
   },
   "global_settings": {
@@ -135,40 +204,34 @@
     "filename_patterns": {
       "KEM": ["KEM_", "KEM-", "kem_", "kem-"],
       "SEA": ["SEA_", "SEA-", "sea_", "sea-"],
-      "TAC": ["TAC_", "TAC-", "tac_", "tac-"]
+      "TAC": ["TAC_", "TAC-", "tac_", "tac-"],
+      "ISQ": ["ISQ_", "ISQ-", "isq_", "isq-"],
+      "PUL": ["PUL_", "PUL-", "pul_", "pul-"],
+      "TUK": ["TUK_", "TUK-", "tuk_", "tuk-"]
     },
     "path_patterns": {
-      "KEM": ["kem-", "KEM-", "/kem/", "/KEM/", "\\kem\\", "\\KEM\\"],
-      "SEA": ["sea-", "SEA-", "/sea/", "/SEA/", "\\sea\\", "\\SEA\\"],
-      "TAC": ["tac-", "TAC-", "/tac/", "/TAC/", "\\tac\\", "\\TAC\\"]
+      "KEM": ["kem-", "KEM-", "/kem/", "/KEM/", "\\kem\\", "\\KEM\\", "/kirkland/"],
+      "SEA": ["sea-", "SEA-", "/sea/", "/SEA/", "\\sea\\", "\\SEA\\", "/seattle/"],
+      "TAC": ["tac-", "TAC-", "/tac/", "/TAC/", "\\tac\\", "\\TAC\\", "/tacoma/"],
+      "ISQ": ["isq-", "ISQ-", "/isq/", "/ISQ/", "\\isq\\", "\\ISQ\\", "/issaquah/"],
+      "PUL": ["pul-", "PUL-", "/pul/", "/PUL/", "\\pul\\", "\\PUL\\", "/puyallup/"],
+      "TUK": ["tuk-", "TUK-", "/tuk/", "/TUK/", "\\tuk\\", "\\TUK\\", "/tukwila/"]
     },
     "content_prefixes": {
-      "KEM": ["KEM\\s", "KEM\\t", "^KEM\\s", "^KEM\\t"],
-      "SEA": ["SEA\\s", "SEA\\t", "^SEA\\s", "^SEA\\t"],
-      "TAC": ["TAC\\s", "TAC\\t", "^TAC\\s", "^TAC\\t"]
+      "KEM": ["(?i)kirkland\\s*court", "(?i)kem\\s*case", "KEM\\s", "^KEM\\s", "^KEM\\t"],
+      "SEA": ["(?i)seattle\\s*court", "(?i)sea\\s*case", "(?i)king\\s*county", "SEA\\s", "^SEA\\s", "^SEA\\t"],
+      "TAC": ["(?i)tacoma\\s*court", "(?i)tac\\s*case", "(?i)pierce\\s*county", "TAC\\s", "^TAC\\s", "^TAC\\t"],
+      "ISQ": ["(?i)issaquah\\s*court", "(?i)isq\\s*case", "ISQ\\s", "^ISQ\\s", "^ISQ\\t"],
+      "PUL": ["(?i)puyallup\\s*court", "(?i)pul\\s*case", "PUL\\s", "^PUL\\s", "^PUL\\t"],
+      "TUK": ["(?i)tukwila\\s*court", "(?i)tuk\\s*case", "TUK\\s", "^TUK\\s", "^TUK\\t"]
     },
     "file_pattern_mapping": {
-      "KEM": [
-        "*.kem",
-        "*kirkland*",
-        "*kem_*",
-        "*_kem_*",
-        "PAMarchive/SeaTac/*"
-      ],
-      "SEA": [
-        "*.sea",
-        "*seattle*",
-        "*sea_*",
-        "*_sea_*",
-        "PAMarchive/Seattle/*"
-      ],
-      "TAC": [
-        "*.tac",
-        "*tacoma*",
-        "*tac_*",
-        "*_tac_*",
-        "PAMarchive/Tacoma/*"
-      ]
+      "KEM": ["*.kem", "*kirkland*", "*kem_*", "*_kem_*", "PAMarchive/SeaTac/*"],
+      "SEA": ["*.sea", "*seattle*", "*sea_*", "*_sea_*", "PAMarchive/SeaTac/*"],
+      "TAC": ["*.tac", "*tacoma*", "*tac_*", "*_tac_*", "PAMarchive/SeaTac/*"],
+      "ISQ": ["*.isq", "*issaquah*", "*isq_*", "*_isq_*", "PAMarchive/SeaTac/*"],
+      "PUL": ["*.pul", "*puyallup*", "*pul_*", "*_pul_*", "PAMarchive/SeaTac/*"],
+      "TUK": ["*.tuk", "*tukwila*", "*tuk_*", "*_tuk_*", "PAMarchive/SeaTac/*"]
     },
     "directory_mapping": {
       "kem-inbox": "KEM",
@@ -177,6 +240,12 @@
       "sea-results": "SEA",
       "tac-inbox": "TAC",
       "tac-results": "TAC",
+      "isq-inbox": "ISQ",
+      "isq-results": "ISQ",
+      "pul-inbox": "PUL",
+      "pul-results": "PUL",
+      "tuk-inbox": "TUK",
+      "tuk-results": "TUK",
       "/PAMarchive/SeaTac/": "KEM",
       "/PAMarchive/Seattle/": "SEA",
       "/PAMarchive/Tacoma/": "TAC"
@@ -216,3 +285,6 @@
     }
   }
 }
+
+
+

@@ -1,22 +1,50 @@
 
 {
-  "ftp_server": "40.65.119.170",
+  "ftp_server": "ftp.example.com",
   "ftp_port": 21,
-  "ftp_username": "Ocourt",
-  "ftp_password": "ptg_123",
+  "ftp_username": "ftpuser",
+  "ftp_password": "encrypted_password_here",
   "ftp_base_path": "/PAMarchive/SeaTac/",
-  "ftp_inbox": "/PAMarchive/SeaTac/kem-inbox/",
-  "ftp_results": "/PAMarchive/SeaTac/kem-results/",
-  "ftp_processed": "/PAMarchive/SeaTac/processed-archive/",
-  "ftp_invalid": "/PAMarchive/SeaTac/invalid-archive/",
+  "ftp_inbox": "/PAMarchive/SeaTac/shared-inbox/",
+  "ftp_results": "/PAMarchive/SeaTac/archive/results/",
+  "ftp_processed": "/PAMarchive/SeaTac/archive/processed/",
+  "ftp_invalid": "/PAMarchive/SeaTac/archive/invalid/",
+
   "local_temp_dir": "ftp_temp",
-  "process_interval_minutes": 5,
+
+  "process_interval_minutes": 60,
   "batch_size": 10,
   "delete_after_download": false,
   "upload_results": true,
   "archive_on_ftp": true,
-  "file_extensions": [".txt", ".pdf", ".csv"],
-  "max_file_size_mb": 10,
+
+  "connection_timeout": 30,
+  "use_tls": false,
   "retry_attempts": 3,
-  "connection_timeout": 30
+  "retry_delay": 5,
+  "file_extensions": [
+    ".txt",
+    ".pdf",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".tiff"
+  ],
+
+  "router": {
+    "enable_content_based_routing": true,
+    "router_mode": "enforce",
+    "quarantine_dir": "/PAMarchive/SeaTac/unknown/",
+    "routing_threshold": 80,
+    "routing_margin": 20,
+    "enable_idempotency": true,
+    "max_classification_attempts": 2
+  },
+
+  "logging": {
+    "level": "INFO",
+    "file": "ftp_processor.log",
+    "max_bytes": 10485760,
+    "backup_count": 5
+  }
 }

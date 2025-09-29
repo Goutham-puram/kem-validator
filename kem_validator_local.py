@@ -1678,6 +1678,69 @@ class DatabaseManager:
 
         conn.commit()
         conn.close()
+
+        # Run router-related migrations (idempotent)
+        try:
+            self._run_router_migration()
+        except Exception as e:
+            logger.warning(f"Router migration skipped/failed: {e}")
+
+    def _run_router_migration(self):
+        """Run external router migration if available; fallback to internal steps."""
+        try:
+            from migrations.router_migration import RouterDatabaseMigration
+            RouterDatabaseMigration(self.db_path).migrate()
+            return
+        except Exception as e:
+            logger.debug(f"External router migration not used: {e}")
+
+        # Fallback: minimal internal migration
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA table_info(processing_history)")
+            cols = {row[1] for row in cursor.fetchall()}
+            for name, coltype in [
+                ("routed_court_code", "TEXT"),
+                ("routing_confidence", "INTEGER"),
+                ("routing_explanation", "TEXT"),
+                ("router_scores_json", "TEXT"),
+                ("idempotency_key", "TEXT"),
+                ("router_mode", "TEXT"),
+                ("quarantined", "INTEGER DEFAULT 0"),
+            ]:
+                if name not in cols:
+                    try:
+                        cursor.execute(f"ALTER TABLE processing_history ADD COLUMN {name} {coltype}")
+                    except sqlite3.OperationalError:
+                        pass
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS processed_ledger (
+                    idempotency_key TEXT PRIMARY KEY,
+                    remote_path TEXT NOT NULL,
+                    file_size INTEGER,
+                    file_mtime TEXT,
+                    court_code TEXT,
+                    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    processing_status TEXT,
+                    processing_id INTEGER,
+                    FOREIGN KEY (processing_id) REFERENCES processing_history(id)
+                )
+                """
+            )
+            for idx, table, column in [
+                ("idx_processing_history_court", "processing_history", "court_code"),
+                ("idx_processing_history_routed", "processing_history", "routed_court_code"),
+                ("idx_processing_history_processed_at", "processing_history", "processed_at"),
+                ("idx_processing_history_idempotency", "processing_history", "idempotency_key"),
+                ("idx_processed_ledger_processed_at", "processed_ledger", "processed_at"),
+                ("idx_processed_ledger_path", "processed_ledger", "remote_path"),
+            ]:
+                try:
+                    cursor.execute(f"CREATE INDEX IF NOT EXISTS {idx} ON {table}({column})")
+                except sqlite3.OperationalError:
+                    pass
+            conn.commit()
     
     def save_processing_result(self, file_name: str, stats: Dict, csv_path: str, court_code: str = 'KEM'):
         """Save processing result to database with court code support"""

@@ -1,102 +1,21 @@
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environment
-venv/
-env/
-ENV/
-.venv/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Environment files
+*.pyc
 .env
-*.env
-!.env.example
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Virtualenv
+venv/
 
-# Logs
+# Logs and DBs
 *.log
-logs/
+*.sqlite
+*.db
 
-# Application directories (contain processed data)
-kem-inbox/
-kem-results/
+# App outputs
+ftp_temp/
 processed-archive/
 invalid-archive/
 
-# But keep directory structure
-!kem-inbox/.gitkeep
-!kem-results/.gitkeep
-!processed-archive/.gitkeep
-!invalid-archive/.gitkeep
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-.~*
-
-# Test coverage
-htmlcov/
-.coverage
-.pytest_cache/
-coverage.xml
-*.cover
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# Streamlit
-.streamlit/
-
 # OS files
+.DS_Store
 Thumbs.db
-desktop.ini
-
-# Archives
-*.zip
-*.tar.gz
-*.rar
-
-# Secrets and keys
-*.key
-*.pem
-*.pfx
-secrets/
-
-# OCR temp files
-tesseract_temp/
-ocr_cache/
