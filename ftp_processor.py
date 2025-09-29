@@ -2392,11 +2392,11 @@ class FTPProcessor:
             # Test directory access
             logger.info("Testing directory access...")
             self.ftp.cwd(self.ftp_config.ftp_base_path)
-            logger.info(f"✓ Can access base path: {self.ftp_config.ftp_base_path}")
+            logger.info(f"[SUCCESS] Can access base path: {self.ftp_config.ftp_base_path}")
             
             # Test file listing
             files = self.list_ftp_files(self.ftp_config.ftp_inbox)
-            logger.info(f"✓ Can list files in inbox: {len(files)} files found")
+            logger.info(f"[SUCCESS] Can list files in inbox: {len(files)} files found")
             
             # Test write permission (create and delete a test file)
             test_file = "test_permission.txt"
@@ -2407,9 +2407,9 @@ class FTPProcessor:
                 f.write("File Validator FTP Test")
             
             if self.upload_file(local_test, test_path):
-                logger.info("✓ Can upload files")
+                logger.info("[SUCCESS] Can upload files")
                 if self.delete_ftp_file(test_path):
-                    logger.info("✓ Can delete files")
+                    logger.info("[SUCCESS] Can delete files")
             
             os.remove(local_test)
             
@@ -2424,7 +2424,7 @@ class FTPProcessor:
             
             if self.upload_file(local_test, test_src):
                 if self.move_ftp_file(test_src, test_dst):
-                    logger.info("✓ Can move files between directories")
+                    logger.info("[SUCCESS] Can move files between directories")
                     # Clean up
                     self.delete_ftp_file(test_dst)
                 else:
@@ -2441,11 +2441,11 @@ class FTPProcessor:
             # Disconnect
             self.disconnect_ftp()
             
-            logger.info("✅ FTP connection test successful!")
+            logger.info("[SUCCESS] FTP connection test successful!")
             return True
             
         except Exception as e:
-            logger.error(f"❌ FTP connection test failed: {e}")
+            logger.error(f"[ERROR] FTP connection test failed: {e}")
             self.disconnect_ftp()
             return False
 
@@ -2502,7 +2502,7 @@ def main():
             
             print(f"\nProcessed {len(results)} files:")
             for r in results:
-                status = "✓" if r['status'] == 'success' else "✗"
+                status = "[OK]" if r['status'] == 'success' else "[FAIL]"
                 print(f"  {status} {r.get('filename', 'Unknown')}: {r.get('validation_status', r.get('reason', 'N/A'))}")
         
         elif choice == "5":

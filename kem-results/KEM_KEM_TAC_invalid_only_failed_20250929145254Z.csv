@@ -1,0 +1,41 @@
+# File Validation Report
+# Court: KEM - Kirkland Equipment Management
+# Source File: KEM_TAC_invalid_only.txt
+# Generated: 2025-09-29 14:52:54
+# Status: FAILED
+
+# COURT SUMMARY STATISTICS
+# Court Code: KEM
+# Court Name: Kirkland Court
+# Total Lines Processed: 24
+# KEM Lines Found: 0
+# Valid KEM IDs: 0
+# Failed KEM IDs: 0
+# Success Rate: 0.0%
+
+# DETAILED VALIDATION RESULTS
+court_code,court_name,line_number,kem_id_raw,kem_digits,digits_count,is_valid,fail_reason,validation_details,raw_line
+KEM,Kirkland Court,1,,,0,True,not_a_KEM_line,,TAC COURT - ALL INVALID TEST CASES
+KEM,Kirkland Court,2,,,0,True,not_a_KEM_line,,Generated: 2025-09-18 14:41:07
+KEM,Kirkland Court,3,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,5,,,0,True,not_a_KEM_line,,Testing invalid cases for TAC (must be 10-14 digits):
+KEM,Kirkland Court,7,,,0,True,not_a_KEM_line,,Too Short (< 10 digits):
+KEM,Kirkland Court,8,,,0,True,not_a_KEM_line,,TAC	1	Single Digit
+KEM,Kirkland Court,9,,,0,True,not_a_KEM_line,,TAC	123456789	Nine Digits
+KEM,Kirkland Court,11,,,0,True,not_a_KEM_line,,Too Long (> 14 digits):
+KEM,Kirkland Court,12,,,0,True,not_a_KEM_line,,TAC	123456789012345	Fifteen Digits
+KEM,Kirkland Court,13,,,0,True,not_a_KEM_line,,TAC	1234567890123456	Sixteen Digits
+KEM,Kirkland Court,14,,,0,True,not_a_KEM_line,,TAC	12345678901234567890	Twenty Digits
+KEM,Kirkland Court,16,,,0,True,not_a_KEM_line,,No Valid Digits:
+KEM,Kirkland Court,17,,,0,True,not_a_KEM_line,,TAC	TACOMA	Pure Letters
+KEM,Kirkland Court,18,,,0,True,not_a_KEM_line,,TAC	INDUSTRIAL	Industry Name
+KEM,Kirkland Court,19,,,0,True,not_a_KEM_line,,TAC	@#$%^&*()	Special Characters
+KEM,Kirkland Court,20,,,0,True,not_a_KEM_line,,TAC		Empty ID
+KEM,Kirkland Court,21,,,0,True,not_a_KEM_line,,TAC	ΩΦΨΧΥΤΣΡ	Greek Letters
+KEM,Kirkland Court,23,,,0,True,not_a_KEM_line,,Mixed Invalid:
+KEM,Kirkland Court,24,,,0,True,not_a_KEM_line,,TAC	TAC123	Only 3 digits
+KEM,Kirkland Court,25,,,0,True,not_a_KEM_line,,TAC	PLANT456MILL	Only 3 digits scattered
+KEM,Kirkland Court,26,,,0,True,not_a_KEM_line,,TAC	Factory#789ABC	Only 3 digits with text
+KEM,Kirkland Court,28,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,29,,,0,True,not_a_KEM_line,,All 15 entries should FAIL validation
+KEM,Kirkland Court,30,,,0,True,not_a_KEM_line,,Expected success rate: 0%

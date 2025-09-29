@@ -1,0 +1,30 @@
+SEA COURT - ALL VALID TEST CASES
+Generated: 2025-09-18 14:41:07
+===================================
+
+Testing all valid ranges for SEA (8-12 digits):
+
+Minimum Length (8 digits):
+SEA	12345678	Seattle Item Alpha
+SEA	87654321	Seattle Item Beta
+SEA	11223344	Seattle Item Gamma
+
+Mid Range (9-11 digits):
+SEA	123456789	Nine Digit Seattle Item
+SEA	1234567890	Ten Digit Seattle Item
+SEA	12345678901	Eleven Digit Seattle Item
+
+Maximum Length (12 digits):
+SEA	123456789012	Maximum Seattle Item A
+SEA	987654321098	Maximum Seattle Item B
+SEA	111222333444	Maximum Seattle Item C
+
+Special Valid Cases:
+SEA	00000000	All Zeros Min (8 digits)
+SEA	000000000000	All Zeros Max (12 digits)
+SEA	206.555.1234	Local Phone (10 digits)
+SEA	P1O2R3T4S5E6A7T8	Alphanumeric (8 digits extracted)
+
+===================================
+All 15 entries should PASS validation
+Expected success rate: 100%

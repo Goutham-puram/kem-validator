@@ -1,0 +1,45 @@
+# File Validation Report
+# Court: KEM - Kirkland Equipment Management
+# Source File: KEM_KEM_invalid_only.txt
+# Generated: 2025-09-29 14:51:42
+# Status: FAILED
+
+# COURT SUMMARY STATISTICS
+# Court Code: KEM
+# Court Name: Kirkland Court
+# Total Lines Processed: 28
+# KEM Lines Found: 12
+# Valid KEM IDs: 1
+# Failed KEM IDs: 11
+# Success Rate: 8.3%
+
+# DETAILED VALIDATION RESULTS
+court_code,court_name,line_number,kem_id_raw,kem_digits,digits_count,is_valid,fail_reason,validation_details,raw_line
+KEM,Kirkland Court,1,,,0,True,not_a_KEM_line,,KEM COURT - ALL INVALID TEST CASES
+KEM,Kirkland Court,2,,,0,True,not_a_KEM_line,,Generated: 2025-09-18 14:41:07
+KEM,Kirkland Court,3,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,5,,,0,True,not_a_KEM_line,,Testing invalid cases for KEM (must be 9-13 digits):
+KEM,Kirkland Court,7,,,0,True,not_a_KEM_line,,Too Short (< 9 digits):
+KEM,Kirkland Court,8,1,1,1,False,digit_count_out_of_range,Expected 9-13 digits,KEM	1	Single Digit
+KEM,Kirkland Court,9,12,12,2,False,digit_count_out_of_range,Expected 9-13 digits,KEM	12	Two Digits
+KEM,Kirkland Court,10,123,123,3,False,digit_count_out_of_range,Expected 9-13 digits,KEM	123	Three Digits
+KEM,Kirkland Court,11,1234567,1234567,7,False,digit_count_out_of_range,Expected 9-13 digits,KEM	1234567	Seven Digits
+KEM,Kirkland Court,12,12345678,12345678,8,False,digit_count_out_of_range,Expected 9-13 digits,KEM	12345678	Eight Digits
+KEM,Kirkland Court,14,,,0,True,not_a_KEM_line,,Too Long (> 13 digits):
+KEM,Kirkland Court,15,12345678901234,12345678901234,14,False,digit_count_out_of_range,Expected 9-13 digits,KEM	12345678901234	Fourteen Digits
+KEM,Kirkland Court,16,123456789012345,123456789012345,15,False,digit_count_out_of_range,Expected 9-13 digits,KEM	123456789012345	Fifteen Digits
+KEM,Kirkland Court,17,1234567890123456,1234567890123456,16,False,digit_count_out_of_range,Expected 9-13 digits,KEM	1234567890123456	Sixteen Digits
+KEM,Kirkland Court,18,12345678901234567890,12345678901234567890,20,False,digit_count_out_of_range,Expected 9-13 digits,KEM	12345678901234567890	Twenty Digits
+KEM,Kirkland Court,20,,,0,True,not_a_KEM_line,,No Valid Digits:
+KEM,Kirkland Court,21,ABCDEFGHIJK,,0,False,no_digits_found,no_digits_found,KEM	ABCDEFGHIJK	Pure Letters
+KEM,Kirkland Court,22,!!!@@@###,,0,False,no_digits_found,no_digits_found,KEM	!!!@@@###	Special Characters
+KEM,Kirkland Court,23,,,0,False,no_digits_found,no_digits_found,KEM		Empty ID
+KEM,Kirkland Court,24,---...---,,0,False,no_digits_found,no_digits_found,KEM	---...---	Punctuation Only
+KEM,Kirkland Court,25,αβγδεζηθι,,0,False,no_digits_found,no_digits_found,KEM	αβγδεζηθι	Unicode Characters
+KEM,Kirkland Court,27,,,0,True,not_a_KEM_line,,Mixed Invalid:
+KEM,Kirkland Court,28,ABC123,123,3,False,digit_count_out_of_range,Expected 9-13 digits,KEM	ABC123	Only 3 digits in alphanumeric
+KEM,Kirkland Court,29,12AB34CD56,123456,6,False,digit_count_out_of_range,Expected 9-13 digits,KEM	12AB34CD56	Only 6 digits scattered
+KEM,Kirkland Court,30,Phone: 123-456-7890,1234567890,10,True,,,KEM	Phone: 123-456-7890	Text with 10 digits (but formatted)
+KEM,Kirkland Court,32,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,33,,,0,True,not_a_KEM_line,,All 18 entries should FAIL validation
+KEM,Kirkland Court,34,,,0,True,not_a_KEM_line,,Expected success rate: 0%

@@ -1,14 +1,14 @@
 
 {
-  "ftp_server": "ftp.example.com",
+  "ftp_server": "40.65.119.170",
   "ftp_port": 21,
-  "ftp_username": "ftpuser",
-  "ftp_password": "encrypted_password_here",
+  "ftp_username": "Ocourt",
+  "ftp_password": "ptg_123",
   "ftp_base_path": "/PAMarchive/SeaTac/",
-  "ftp_inbox": "/PAMarchive/SeaTac/shared-inbox/",
-  "ftp_results": "/PAMarchive/SeaTac/archive/results/",
-  "ftp_processed": "/PAMarchive/SeaTac/archive/processed/",
-  "ftp_invalid": "/PAMarchive/SeaTac/archive/invalid/",
+  "ftp_inbox": "/PAMarchive/SeaTac/kem-inbox/",
+  "ftp_results": "/PAMarchive/SeaTac/kem-results/",
+  "ftp_processed": "/PAMarchive/SeaTac/processed-archive/",
+  "ftp_invalid": "/PAMarchive/SeaTac/invalid-archive/",
 
   "local_temp_dir": "ftp_temp",
 

@@ -1,0 +1,48 @@
+# File Validation Report
+# Court: KEM - Kirkland Equipment Management
+# Source File: KEM_no_prefix_mixed_formats.txt
+# Generated: 2025-09-29 14:51:47
+# Status: FAILED
+
+# COURT SUMMARY STATISTICS
+# Court Code: KEM
+# Court Name: Kirkland Court
+# Total Lines Processed: 31
+# KEM Lines Found: 0
+# Valid KEM IDs: 0
+# Failed KEM IDs: 0
+# Success Rate: 0.0%
+
+# DETAILED VALIDATION RESULTS
+court_code,court_name,line_number,kem_id_raw,kem_digits,digits_count,is_valid,fail_reason,validation_details,raw_line
+KEM,Kirkland Court,1,,,0,True,not_a_KEM_line,,NO PREFIX TEST - MIXED FORMATS
+KEM,Kirkland Court,2,,,0,True,not_a_KEM_line,,Generated: 2025-09-18 14:41:07
+KEM,Kirkland Court,3,,,0,True,not_a_KEM_line,,Testing various data formats without court prefixes
+KEM,Kirkland Court,4,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,6,,,0,True,not_a_KEM_line,,CSV-style data (no prefixes):
+KEM,Kirkland Court,7,,,0,True,not_a_KEM_line,,"123456789,Pump Assembly,Location A"
+KEM,Kirkland Court,8,,,0,True,not_a_KEM_line,,"87654321,Valve Unit,Location B"
+KEM,Kirkland Court,9,,,0,True,not_a_KEM_line,,"1234567890123,Control Panel,Location C"
+KEM,Kirkland Court,10,,,0,True,not_a_KEM_line,,"12345678,Sensor Pack,Location D"
+KEM,Kirkland Court,12,,,0,True,not_a_KEM_line,,Tab-separated data (no prefixes):
+KEM,Kirkland Court,13,,,0,True,not_a_KEM_line,,987654321	Motor Unit	Building 1
+KEM,Kirkland Court,14,,,0,True,not_a_KEM_line,,1111111111111	Generator Set	Building 2
+KEM,Kirkland Court,15,,,0,True,not_a_KEM_line,,222222222	Transformer	Building 3
+KEM,Kirkland Court,16,,,0,True,not_a_KEM_line,,33333333333333	Switch Gear	Building 4
+KEM,Kirkland Court,18,,,0,True,not_a_KEM_line,,Space-separated data (no prefixes):
+KEM,Kirkland Court,19,,,0,True,not_a_KEM_line,,444444444 Relay Panel Room 5
+KEM,Kirkland Court,20,,,0,True,not_a_KEM_line,,5555555555555 Circuit Breaker Room 6
+KEM,Kirkland Court,21,,,0,True,not_a_KEM_line,,66666666 Distribution Board Room 7
+KEM,Kirkland Court,22,,,0,True,not_a_KEM_line,,777777777777777 Control System Room 8
+KEM,Kirkland Court,24,,,0,True,not_a_KEM_line,,Descriptive text without numeric data:
+KEM,Kirkland Court,25,,,0,True,not_a_KEM_line,,This equipment inventory covers all major components.
+KEM,Kirkland Court,26,,,0,True,not_a_KEM_line,,Regular maintenance is scheduled quarterly.
+KEM,Kirkland Court,27,,,0,True,not_a_KEM_line,,Contact facility management for access requirements.
+KEM,Kirkland Court,29,,,0,True,not_a_KEM_line,,Mixed alphanumeric (no prefixes):
+KEM,Kirkland Court,30,,,0,True,not_a_KEM_line,,A1B2C3D4E5F6G7H8I9	Mixed Alpha Equipment 1
+KEM,Kirkland Court,31,,,0,True,not_a_KEM_line,,X8Y9Z0W1V2U3T4S5R6Q7	Mixed Alpha Equipment 2
+KEM,Kirkland Court,33,,,0,True,not_a_KEM_line,,===================================
+KEM,Kirkland Court,34,,,0,True,not_a_KEM_line,,Expected Results (assuming default court behavior):
+KEM,Kirkland Court,35,,,0,True,not_a_KEM_line,,- Should process numeric portions using default court rules
+KEM,Kirkland Court,36,,,0,True,not_a_KEM_line,,- Format variations should not affect validation
+KEM,Kirkland Court,37,,,0,True,not_a_KEM_line,,- Non-numeric lines should be ignored or marked as informational

@@ -114,7 +114,7 @@ def show_dashboard():
     st.subheader("Recent History")
     hist = db.get_history(20)
     if not hist.empty:
-        st.dataframe(hist[['file_name', 'processed_at', 'validation_status', 'kem_lines', 'success_rate']], use_container_width=True)
+        st.dataframe(hist[['file_name', 'processed_at', 'validation_status', 'kem_lines', 'success_rate']], width='stretch')
     else:
         st.info("No history yet")
 
@@ -138,7 +138,7 @@ def show_ftp_files():
     files = st.session_state.ftp_processor.list_ftp_files(ftp_path)
     if files:
         df = pd.DataFrame({"Filename": files, "Select": [False]*len(files)})
-        edited = st.data_editor(df, hide_index=True, use_container_width=True, disabled=["Filename"])
+        edited = st.data_editor(df, hide_index=True, width='stretch', disabled=["Filename"])
         selected = edited[edited["Select"]]["Filename"].tolist() if not edited.empty else []
         c1, c2 = st.columns(2)
         with c1:
@@ -260,13 +260,13 @@ def show_analytics():
                 fig = go.Figure(data=[go.Pie(labels=['Passed', 'Failed'], values=[passed, failed], hole=0.3,
                                              marker_colors=['#28a745', '#dc3545'])])
                 fig.update_layout(title="Validation Status Distribution", height=380)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
             with colc2:
                 daily = filtered.groupby('date').agg({'validation_status': lambda x: (x == 'passed').sum()}).reset_index()
                 daily.columns = ['date', 'passed_count']
                 fig = px.line(daily, x='date', y='passed_count', title="Daily Passed Count")
                 fig.update_layout(height=380)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width='stretch')
         except Exception:
             st.caption("Charts unavailable (plotly not installed)")
 
@@ -327,12 +327,12 @@ def show_analytics():
                 rows.append({'Directory': 'Processed' if key == 'processed_dir' else 'Invalid',
                              'Files': row.get('files', 0), 'Size (MB)': round(row.get('size_mb', 0), 2)})
         if rows:
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
 
         if monthly:
             st.markdown("#### Monthly Breakdown")
             month_rows = [{'Month': m, 'Files': r.get('files', 0), 'Size (MB)': round(r.get('size_mb', 0), 2)} for m, r in monthly.items()]
-            st.dataframe(pd.DataFrame(month_rows).sort_values('Month'), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(month_rows).sort_values('Month'), width='stretch', hide_index=True)
 
     if isinstance(stats, dict) and 'database_tracking' in stats:
         _render_single_court_stats(stats)
@@ -350,7 +350,7 @@ def show_analytics():
                         'Newest': dbs.get('newest_file', ''),
                         })
         if rows:
-            st.dataframe(pd.DataFrame(rows).sort_values('Court'), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(rows).sort_values('Court'), width='stretch', hide_index=True)
         else:
             st.info("No archive statistics available.")
 
